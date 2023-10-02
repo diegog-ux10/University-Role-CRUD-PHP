@@ -18,9 +18,7 @@ class AuthController extends Controller
         $loginForm = new Login();
         if ($request->isPost()) {
             $loginForm->loadData($request->getBody());
-            // $loginForm->validate() && $loginForm->login()
-            if (true) {
-                Application::$app->session->set("user", ["name" => "Diego", "rol" => "ADMIN"]);
+            if ($loginForm->validate() && $loginForm->login()) {
                 $response->redirect("/");
             }
         }

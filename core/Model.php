@@ -1,10 +1,6 @@
 <?php
 
 namespace core;
-
-use models;
-use models\Login;
-
 abstract class Model
 {
     public const RULE_REQUIRED = "required";

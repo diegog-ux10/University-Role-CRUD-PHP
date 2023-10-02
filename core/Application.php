@@ -52,10 +52,21 @@ class Application
     public function login(DbModel $user)
     {
         $this->user = $user;
-        $primaryKey = $user->primaryKey();
-        $primaryValue = $user->{$primaryKey};
-        $this->session->set("user", $primaryValue);
+        switch ($this->user->{'id_role'}) {
+            case 1:
+                $rol = "ADMIN";
+                break;
+            case 2:
+                $rol = "TEACHER";
+                break;
+            case 3:
+                $rol = "STUDENT";
+                break;
 
+            default:
+                break;
+        }
+        $this->session->set("user", ["name" => $this->user->{"email"}, "rol" => $rol, "id_class" => $this->user->{"id_class"}, "fullName" => $this->user->{'firstname'} . " " .  $this->user->{'lastname'}, "id_class" => $this->user->{'id_class'}]);
         return true;
     }
 

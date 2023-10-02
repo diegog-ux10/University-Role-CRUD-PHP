@@ -22,12 +22,12 @@ class Controller
         if (!$user) {
             $response->redirect("/login");
         };
-        if ($user["rol"] === "STUDENT") {
-            $this->setLayout("main");
-            return $this->render("unauthorized", [
-                'message' => "No tiene los permisos necesarios para ver esta opción."
-            ]);
-        }
+        // if ($user["rol"] === 3) {
+        //     $this->setLayout("main");
+        //     return $this->render("unauthorized", [
+        //         'message' => "No tiene los permisos necesarios para ver esta opción."
+        //     ]);
+        // }
         return true;
     }
 }
