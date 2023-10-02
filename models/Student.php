@@ -5,32 +5,9 @@ namespace models;
 use core\Application;
 use core\UserModel;
 
-class Student extends UserModel
+class Student extends User
 {
-    public string $email = '';
-    public string $password = '';
-    public string $firstname = '';
-    public string $lastname = '';
-    public string $address = '';
-    public string $dni = '';
-    public string $bday = '';
-    public string $name = '';
-
-    public function tableName(): string
-    {
-        return "students";
-    }
-
-    public static function primaryKey(): string
-    {
-        return "id";
-    }
-
-    public function save()
-    {
-        $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-        return parent::save();
-    }
+    public int $id_role = 3;
 
     public function rules(): array
     {
@@ -46,24 +23,10 @@ class Student extends UserModel
 
     public function attributes(): array
     {
-        return ["email", "password", "firstname", "lastname" , "address", "dni" ,"bday"];
-    }
-
-    public function getDisplayName(): string
-    {
-        return $this->name;
+        return ["email", "firstname", "lastname" , "address", "dni" ,"bday", "id_role"];
     }
 
     public function getAllStudents() {
         return parent::all();
-    }
-
-    public function update($id)
-    {
-        $password = $this->password;
-        if($password) {
-            $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-        }
-        return parent::updated($id);
     }
 }

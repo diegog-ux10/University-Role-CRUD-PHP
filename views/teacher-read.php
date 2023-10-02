@@ -1,47 +1,53 @@
 <div>
-    <h1 class="mb-2">Lista de Alumnos</h1>
+    <h1 class="mb-2">Lista de Maestros</h1>
 </div>
 
 <div class="bg-white rounded">
     <div class="flex justify-between border border-gray-500 py-4 px-4">
-        <h2>Informacion de Alumnos</h2>
-        <a href="alumnos/crear-alumno">Agregar Alumno</a>
+        <h2>Informacion de Maestros</h2>
+        <a href="maestros/crear-maestro">Agregar Maestro</a>
     </div>
     <div class="border border-gray-500 py-3 px-4">
         <table id="example" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>DNI</th>
-                    <th>Correo</th>
                     <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Direccion</th>
+                    <th>Correo</th>
+                    <th>Dirección</th>
                     <th>Fecha de Nacimiento</th>
+                    <th>Clase Asignada</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($students as $student) : ?>
+                <?php foreach ($teachers as $teacher) : ?>
                     <tr>
-                        <td><?php echo $student["id"] ?></td>
-                        <td><?php echo $student["dni"] ?></td>
-                        <td><?php echo $student["email"] ?></td>
-                        <td><?php echo $student["firstname"] ?></td>
-                        <td><?php echo $student["lastname"] ?></td>
-                        <td><?php echo $student["address"] ?></td>
-                        <td><?php echo $student["bday"] ?></td>
+                        <td><?php echo $teacher["id"] ?></td>
+                        <td><?php echo $teacher["name"] ?></td>
+                        <td><?php echo $teacher["email"] ?></td>
+                        <td><?php echo $teacher["address"] ?></td>
+                        <td><?php echo $teacher["bday"] ?></td>
+                        <td>
+                            <?php
+                            echo $teacher["asigned_class"] ?>
+                        </td>
                         <td class="flex gap-4">
-                            <a href="<?php echo "alumnos/editar-alumno?id=" .  $student["id"] ?>">
+                            <a href="<?php echo "maestros/editar-maestro?id=" .  $teacher["id"] ?>">
                                 <span class="material-symbols-outlined text-blue-600">
                                     edit
                                 </span>
                             </a>
-                            <a href="<?php "alumno/eliminar-alumno?id=$id" ?>">
-                                <span class="material-symbols-outlined text-red-600">
-                                    delete
-                                </span>
-                            </a>
+                            <div>
+                                <form action="maestros/eliminar-maestro" method="post">
+                                    <input type="number" name="id" value="<?php echo $teacher["id"] ?>" hidden>
+                                    <button type="submit">
+                                        <span class="material-symbols-outlined text-red-600">
+                                            delete
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>

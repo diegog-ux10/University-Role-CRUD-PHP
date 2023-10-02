@@ -7,45 +7,62 @@ $this->title = "Crear Alumno";
 foreach ($model as $key => $value) {
     $$key = $value;
 }
-
-
 ?>
 
-
 <div>
-    <h1 class="mb-2">Lista de Alumnos</h1>
+    <h1 class="mb-2">Lista de Maestros</h1>
 </div>
 
 <div class="bg-white rounded">
     <div class="flex justify-between border border-gray-500 py-4 px-4">
-        <h2>Informacion de Alumnos</h2>
-        <a href="alumnos/crear-alumno">Agregar Alumno</a>
+        <h2>Informacion de Maestros</h2>
+        <a href="maestros/crear-maestro">Agregar Maestro</a>
     </div>
     <div class="border border-gray-500 py-3 px-4">
         <table id="example" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>DNI</th>
-                    <th>Correo</th>
                     <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Direccion</th>
+                    <th>Correo</th>
+                    <th>Dirección</th>
                     <th>Fecha de Nacimiento</th>
+                    <th>Clase Asignada</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($students as $student) : ?>
+                <?php foreach ($teachers as $teacher) : ?>
                     <tr>
-                        <td><?php echo $student["id"] ?></td>
-                        <td><?php echo $student["dni"] ?></td>
-                        <td><?php echo $student["email"] ?></td>
-                        <td><?php echo $student["firstname"] ?></td>
-                        <td><?php echo $student["lastname"] ?></td>
-                        <td><?php echo $student["address"] ?></td>
-                        <td><?php echo $student["bday"] ?></td>
+                        <td><?php echo $teacher["id"] ?></td>
+                        <td><?php echo $teacher["name"] ?></td>
+                        <td><?php echo $teacher["email"] ?></td>
+                        <td><?php echo $teacher["address"] ?></td>
+                        <td><?php echo $teacher["bday"] ?></td>
+                        <td>
+                            <?php
+                            echo $teacher["asigned_class"] ?>
+                        </td>
+                        <td class="flex gap-4">
+                            <a href="<?php echo "maestros/editar-maestro?id=" .  $teacher["id"] ?>">
+                                <span class="material-symbols-outlined text-blue-600">
+                                    edit
+                                </span>
+                            </a>
+                            <div>
+                                <form action="maestros/eliminar-maestro" method="post">
+                                    <input type="number" name="id" value="<?php echo $teacher["id"] ?>" hidden>
+                                    <button type="submit">
+                                        <span class="material-symbols-outlined text-red-600">
+                                            delete
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
+
             </tbody>
         </table>
     </div>
@@ -53,20 +70,13 @@ foreach ($model as $key => $value) {
 
 <div class="fixed h-screen w-full top-0 left-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)] z-50">
     <div class="w-full max-w-xs">
-        <h2>Agregar Alumno</h2>
+        <h2>Editar Maestro</h2>
         <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="" method="post">
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="dni">
-                    DNI
-                </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="dni" type="text" placeholder="DNI" name="dni" value="<?php echo $dni ?>">
-                <p class="text-red-500 text-xs italic"><?php echo $model->getFirstError("dni"); ?></p>
-            </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
                     Correo Electronico
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="text" placeholder="Correo Electronico" name="email" value="<?php echo $email ?>" disabled>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="text" placeholder="Igresa tu email" name="email" value="<?php echo $email ?>" disabled>
                 <p class="text-red-500 text-xs italic"><?php echo $model->getFirstError("email"); ?></p>
             </div>
             <div class="mb-4">
@@ -97,17 +107,26 @@ foreach ($model as $key => $value) {
                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="bday" type="date" placeholder="Fecha de Nacimiento" name="bday" value="<?php echo $bday ?>">
                 <p class="text-red-500 text-xs italic"><?php echo $model->getFirstError("bday"); ?></p>
             </div>
-            <input type="number" value="<?php echo $id ?>" name="id" hidden>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                    Clase Asignada
+                </label>
+                <select name="assigned_class" id="assigned_class" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="0">Sin asignar</option>
+                    <?php foreach ($classes as $class) : ?>
+                        <option value="<?php echo $class["id"] ?>"><?php echo $class["name"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="text-red-500 text-xs italic"><?php echo $model->getFirstError("name"); ?></p>
+            </div>
+            <input type="number" name="id" value="<?php echo $id ?>" hidden>
             <div class="flex items-center justify-between">
-                <a href="/alumnos">close</a>
+                <a href="/maestros">close</a>
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                     Crear
                 </button>
             </div>
         </form>
-        <p class="text-center text-gray-500 text-xs">
-            &copy;2020 Acme Corp. All rights reserved.
-        </p>
     </div>
 </div>
 

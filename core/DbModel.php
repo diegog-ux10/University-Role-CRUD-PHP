@@ -14,9 +14,16 @@ abstract class DbModel extends Model
     {
         $tableName = $this->tableName();
         $attributes = $this->attributes();
-        $params = array_map(fn ($attr) => ":$attr", $attributes);
-        $statement = self::prepare("INSERT INTO $tableName (" . implode(',', $attributes) . ") VALUES (" . implode(',', $params) . ")");
-        foreach ($attributes as $attribute) {
+        $checkedAttrs = [];
+        foreach ($attributes as $attr) {
+            if ($this->{$attr}) {
+                $checkedAttrs[] = $attr;
+            }
+            continue;
+        }
+        $params = array_map(fn ($attr) => ":$attr", $checkedAttrs);
+        $statement = self::prepare("INSERT INTO $tableName (" . implode(',', $checkedAttrs) . ") VALUES (" . implode(',', $params) . ")");
+        foreach ($checkedAttrs as $attribute) {
             $statement->bindValue(":$attribute", $this->{$attribute});
         }
         $statement->execute();
@@ -24,7 +31,7 @@ abstract class DbModel extends Model
     }
 
     public  function updated($id)
-    { 
+    {
         $tableName = $this->tableName();
         $attributes = $this->attributes();
         $attributesToUpdate = [];
@@ -46,21 +53,18 @@ abstract class DbModel extends Model
         return true;
     }
 
-    public static function findOne($where)
+    public function findOne($where)
     {
-        $tableName = "students";
-        $attributes = array_keys($where);
 
+        $tableName = $this->tableName();
+        $attributes = array_keys($where);
         $sql = implode("AND", array_map(fn ($attr) => "$attr = :$attr", $attributes));
 
         $statement = self::prepare("SELECT * FROM $tableName WHERE $sql");
-
         foreach ($where as $key => $item) {
             $statement->bindValue(":$key", $item);
         }
-
         $statement->execute();
-
         return $statement->fetchObject(static::class);
     }
 
@@ -75,5 +79,47 @@ abstract class DbModel extends Model
         $statement = self::prepare("SELECT * FROM $tableName");
         $statement->execute();
         return $statement->fetchAll();
+    }
+
+    public function allOtherTable($tableName)
+    {
+        $statement = self::prepare("SELECT * FROM $tableName");
+        $statement->execute();
+        return $statement->fetchAll();
+    }
+
+    public static function findInOtherTableByID($tableName, $id)
+    {
+        $statement = self::prepare("SELECT * FROM $tableName WHERE id = $id");
+        $statement->execute();
+        return $statement->fetchObject();
+    }
+
+    public static function findInOtherTableByColumn($tableName, $column, $value)
+    {
+        $statement = self::prepare("SELECT * FROM $tableName WHERE $column = $value AND id_role = 2");
+        $statement->execute();
+        return $statement->fetchObject();
+    }
+
+    public static function countCompareById($id, $columnToCompare, $tableName)
+    {
+        $statement = self::prepare("SELECT COUNT($tableName.$columnToCompare) FROM $tableName WHERE $columnToCompare = $id AND id_role = 3");
+        $statement->execute();
+        return $statement->fetchObject();
+    }
+
+    public function delete($id)
+    {
+        $tableName = $this->tableName();
+        $statement = self::prepare("DELETE FROM $tableName WHERE id = $id");
+
+        $statement->execute();
+        return true;
+    }
+
+    public function updatedColumn($teacherId, $classId)
+    {
+        $statement = self::prepare("UPDATE teachers SET id_class = $classId WHERE id = $teacherId");
     }
 }

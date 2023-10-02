@@ -23,6 +23,9 @@ switch ($user["rol"]) {
 
 $breadcrumbs = explode("/", $_SERVER["REQUEST_URI"]);
 
+
+$path = $_SERVER["PATH_INFO"] ?? "/";
+
 ?>
 
 <!DOCTYPE html>
@@ -53,16 +56,16 @@ $breadcrumbs = explode("/", $_SERVER["REQUEST_URI"]);
         </div>
         <ul class="mt-4">
             <?php if ($user["rol"] === "ADMIN") : ?>
-                <li class="mb-1 group sidebar-button">
-                    <a href="#" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
+                <li class="mb-1 group sidebar-button <?php if($path === "/") echo "active" ?>">
+                    <a href="usuarios/permisos" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             manage_accounts
                         </span>
                         <span class="text-sm flex items-center">Permisos</span>
                     </a>
                 </li>
-                <li class="mb-1 group sidebar-button">
-                    <a href="#" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
+                <li class="mb-1 group sidebar-button <?php if($path === "/maestros") echo "active" ?>">
+                    <a href="/maestros" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             interactive_space
                         </span>
@@ -71,7 +74,7 @@ $breadcrumbs = explode("/", $_SERVER["REQUEST_URI"]);
                 </li>
             <?php endif; ?>
             <?php if ($user["rol"] === "ADMIN" or $user["rol"] === "TEACHER") : ?>
-                <li class="mb-1 group sidebar-button">
+                <li class="mb-1 group sidebar-button <?php if($path === "/alumnos") echo "active" ?>">
                     <a href="/alumnos" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             school
@@ -81,7 +84,7 @@ $breadcrumbs = explode("/", $_SERVER["REQUEST_URI"]);
                 </li>
             <?php endif; ?>
             <?php if ($user["rol"] === "ADMIN") : ?>
-                <li class="mb-1 group sidebar-button">
+                <li class="mb-1 group sidebar-button <?php if($path === "/clases") echo "active" ?>">
                     <a href="/clases" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             cast_for_education

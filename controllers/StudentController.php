@@ -14,56 +14,43 @@ class StudentController extends Controller
 {
     public function getStudents(Request $request, Response $response)
     {
-        $user = Application::$app->session->get("user");
-        if (!$user) {
-            $response->redirect("/login");
-        };
-        if ($user["rol"] === "STUDENT") {
-            $this->setLayout("main");
-            return $this->render("unauthorized", [
-                'message' => "No tiene los permisos necesarios para ver esta opción."
-            ]);
-        }
+        parent::checkAuth($response);
         $model = new Student();
-        $students = $model->all();
+        $users = $model->all();
+        $data = $this->getAllStudents($users);
+
         $this->setLayout("main");
-        return $this->render("students", [
-            'students' => $students
+        return $this->render("student-read", [
+            'students' => $data,
+            'model' => $model
         ]);
     }
 
     public function create(Request $request, Response $response)
     {
-        $user = Application::$app->session->get("user");
-        if (!$user) {
-            $response->redirect("/login");
-        };
-        if ($user["rol"] === "STUDENT") {
-            $this->setLayout("main");
-            return $this->render("unauthorized", [
-                'message' => "No tiene los permisos necesarios para ver esta opción."
-            ]);
-        }
-        $newStudent = new Student();
-        $students = $newStudent->all();
+        parent::checkAuth($response);
+        $model = new Student();
+        $users = $model->all();
+        $data = $this->getAllStudents($users);
+
         if ($request->isPost()) {
-            $newStudent->loadData($request->getBody());
-            if ($newStudent->validate() && $newStudent->save()) {
+            $model->loadData($request->getBody());
+            if ($model->validate() && $model->save()) {
                 Application::$app->session->set("message", "Usuario Creado Exitosamente!");
                 Application::$app->response->redirect("/alumnos");
             }
             $this->setLayout("main");
-            return $this->render("create-student", [
-                "model" => $newStudent,
-                'students' => $students
+            return $this->render("student-create", [
+                "model" => $model,
+                'students' => $data
 
             ]);
         }
         if ($request->isGet()) {
             $this->setLayout("main");
-            return $this->render("create-student", [
-                "model" => $newStudent,
-                'students' => $students
+            return $this->render("student-create", [
+                "model" => $model,
+                'students' => $data
             ]);
         }
     }
@@ -71,42 +58,58 @@ class StudentController extends Controller
     public function update(Request $request, Response $response)
     {
         $studentId = $request->getBody()["id"];
-        $user = Application::$app->session->get("user");
-        if (!$user) {
-            $response->redirect("/login");
-        };
-        if ($user["rol"] === "STUDENT") {
-            $this->setLayout("main");
-            return $this->render("unauthorized", [
-                'message' => "No tiene los permisos necesarios para ver esta opción."
-            ]);
-        }
+        parent::checkAuth($response);
 
-        $model = new StudentEdit();
-        $students = $model->all();
+        $model = new Student();
+        $users = $model->all();
+        $data = $this->getAllStudents($users);
         $studentForEdit = $model->findOne(["id" => $studentId]);
 
         if ($request->isPost()) {
             $model->loadData($request->getBody());
-            echo $studentId;
-            if ($model->validate() && $model->update($studentId)) {
+            if ($model->validateUpdate() && $model->update($studentId)) {
                 Application::$app->session->set("message", "Estudiante Actualizado Exitosamente!");
                 Application::$app->response->redirect("/alumnos");
             }
             $this->setLayout("main");
-            return $this->render("edit-student", [
+            return $this->render("student-edit", [
                 "model" => $studentForEdit,
-                'students' => $students
+                'students' => $data
             ]);
         }
 
         if ($request->isGet()) {
             $this->setLayout("main");
-            return $this->render("edit-student", [
+            return $this->render("student-edit", [
                 "model" => $studentForEdit,
-                'students' => $students,
+                'students' => $data,
                 'id' => $studentId
             ]);
         }
+    }
+
+    public function delete(Request $request, Response $response)
+    {
+        $studentId = $request->getBody()["id"];
+
+        parent::checkAuth($response);
+
+        $model = new Student();
+        if ($model->delete($studentId)) {
+            Application::$app->session->set("message", "Estudiante Eliminado Exitosamente!");
+            Application::$app->response->redirect("/alumnos");
+        };
+    }
+
+    public function getAllStudents($users)
+    {
+        $data = [];
+        foreach ($users as $user) {
+            if ($user["id_role"] !== 3) {
+                continue;
+            }
+            $data[] = $user;
+        }
+        return $data;
     }
 }

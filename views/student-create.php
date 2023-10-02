@@ -32,6 +32,7 @@ foreach ($model as $key => $value) {
                     <th>Apellido</th>
                     <th>Direccion</th>
                     <th>Fecha de Nacimiento</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,8 +45,26 @@ foreach ($model as $key => $value) {
                         <td><?php echo $student["lastname"] ?></td>
                         <td><?php echo $student["address"] ?></td>
                         <td><?php echo $student["bday"] ?></td>
+                        <td class="flex gap-4">
+                            <a href="<?php echo "alumnos/editar-alumno?id=" .  $student["id"] ?>">
+                                <span class="material-symbols-outlined text-blue-600">
+                                    edit
+                                </span>
+                            </a>
+                            <div>
+                                <form action="alumnos/eliminar-alumno" method="post">
+                                    <input type="number" name="id" value="<?php echo $student["id"] ?>" hidden>
+                                    <button type="submit">
+                                        <span class="material-symbols-outlined text-red-600">
+                                            delete
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
+
             </tbody>
         </table>
     </div>

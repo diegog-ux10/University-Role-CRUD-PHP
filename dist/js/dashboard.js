@@ -3,7 +3,6 @@ const menuToggle = document.getElementById("menu-open-toggle");
 const dropdownMenu = document.getElementById("dropdown-menu");
 const dropdown = document.getElementById("dropdown");
 const sidebarbuttons = document.querySelectorAll(".sidebar-button");
-console.log(sidebarbuttons);
 
 sidebarbuttons.forEach((element) => {
   element.addEventListener("click", (e) => {
