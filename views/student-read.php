@@ -5,14 +5,6 @@ use core\Application;
 
 $user = Application::$app->session->get("user");
 
-// $studentsAssigned = [];
-// foreach($students as $student) {
-//     if($student['id_class'] !== $user['id_class']) {
-//         continue;
-//     }
-//     $studentsAssigned[] = $student;
-// }
-
 ?>
 
 <!-- START: VISTA PARA ADMIN -->
@@ -100,22 +92,21 @@ $user = Application::$app->session->get("user");
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($studentsAssigned as $student) : ?>
+                    <?php foreach ($assignedStudents as $student) : ?>
                         <tr>
-                            <td><?php echo $student["id"] ?></td>
-
-                            <td><?php echo $student["firstname"] . " " .  $student["lastname"] ?></td>
+                            <td><?php echo $student->id ?></td>
+                            <td><?php echo $student->firstname . " " .  $student->lastname ?></td>
                             <td><?php echo "no calificacion" ?></td>
                             <td><?php echo "No hay Mensajes" ?></td>
                             <td class="flex justify-center gap-4">
-                                <a href="<?php echo "alumnos/editar-alumno?id=" .  $student["id"] ?>">
+                                <a href="<?php echo "alumnos/editar-alumno?id=" .  $student->id ?>">
                                     <span class="material-symbols-outlined text-blue-600">
                                         grading
                                     </span>
                                 </a>
                                 <div>
                                     <form action="alumnos/eliminar-alumno" method="post">
-                                        <input type="number" name="id" value="<?php echo $student["id"] ?>" hidden>
+                                        <input type="number" name="id" value="<?php echo $student->id ?>" hidden>
                                         <button type="submit">
                                             <span class="material-symbols-outlined text-blue-600">
                                                 send

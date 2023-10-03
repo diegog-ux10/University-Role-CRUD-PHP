@@ -15,14 +15,17 @@ class StudentController extends Controller
     public function getStudents(Request $request, Response $response)
     {
         parent::checkAuth($response);
+        $loggedUserId = parent::getLoggedUserId();
         $model = new Student();
         $users = $model->all();
         $data = $this->getAllStudents($users);
+        $assignedStudents = $this->getAllAssignedStudents($loggedUserId);
 
         $this->setLayout("main");
         return $this->render("student-read", [
             'students' => $data,
-            'model' => $model
+            'model' => $model,
+            'assignedStudents' => $assignedStudents
         ]);
     }
 
@@ -111,6 +114,28 @@ class StudentController extends Controller
             $enrolledClasses = Student::getEnrolledClassesByStudentId($user["id"]);
             $user["enrolled_classes"] = $enrolledClasses;
             $data[] = $user;
+        }
+        return $data;
+    }
+
+    public function getAllAssignedStudents($userId)
+    {
+        $statement = Application::$app->db->pdo->prepare("SELECT * FROM classes WHERE id_teacher = $userId");
+        $statement->execute();
+        $class = $statement->fetchObject();
+        if ($class) {
+            $classId = $class->{'id'};
+            $statement = Application::$app->db->pdo->prepare("SELECT * FROM enrolled_classes WHERE id_class = $classId");
+            $statement->execute();
+            $registeredStudents = $statement->fetchAll();
+            $data = [];
+            foreach ($registeredStudents as $register) {
+                $studentId = $register['id_student'];
+                $statement = Application::$app->db->pdo->prepare("SELECT * FROM users WHERE id = $studentId");
+                $statement->execute();
+                $student = $statement->fetchObject();
+                $data[] = $student;
+            }
         }
         return $data;
     }

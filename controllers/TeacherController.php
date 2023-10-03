@@ -15,7 +15,6 @@ class TeacherController extends Controller
     public function getTeachers(Request $request, Response $response)
     {
         parent::checkAuth($response);
-
         $model = new Teacher();
         $users = $model->all();
         $data = $this->getDataTeachers($users);
