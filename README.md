@@ -14,7 +14,7 @@
 - alumno@alumno.com
 - alumno
 
-## Opcionales
+## Opcionales Que se Implementaron
 
 - Las tablas están paginadas.
 - El admin puede ver la cantidad de alumnos inscritos en cada clase.
