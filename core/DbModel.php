@@ -27,7 +27,9 @@ abstract class DbModel extends Model
             $statement->bindValue(":$attribute", $this->{$attribute});
         }
         $statement->execute();
-        return true;
+        $statement = self::prepare("SELECT * FROM $tableName where id = (SELECT LAST_INSERT_ID())");
+        $statement->execute();
+        return $statement->fetchObject();
     }
 
     public  function updated($id)
@@ -49,8 +51,7 @@ abstract class DbModel extends Model
 
             $statement->bindValue(":$attribute", $this->{$attribute});
         }
-        $statement->execute();
-        return true;
+        return $statement->execute();  
     }
 
     public function findOne($where)
@@ -68,6 +69,34 @@ abstract class DbModel extends Model
         return $statement->fetchObject(static::class);
     }
 
+    public function findAll($where)
+    {
+
+        $tableName = $this->tableName();
+        $attributes = array_keys($where);
+        $sql = implode("AND", array_map(fn ($attr) => "$attr = :$attr", $attributes));
+
+        $statement = self::prepare("SELECT * FROM $tableName WHERE $sql");
+        foreach ($where as $key => $item) {
+            $statement->bindValue(":$key", $item);
+        }
+        $statement->execute();
+        return $statement->fetchAll();
+    }
+
+    public static function findAllinOtherTable($tableName, $where)
+    {
+        $attributes = array_keys($where);
+        $sql = implode("AND", array_map(fn ($attr) => "$attr = :$attr", $attributes));
+
+        $statement = self::prepare("SELECT * FROM $tableName WHERE $sql");
+        foreach ($where as $key => $item) {
+            $statement->bindValue(":$key", $item);
+        }
+        $statement->execute();
+        return $statement->fetchAll();
+    }
+
     public static function prepare($sql)
     {
         return Application::$app->db->pdo->prepare($sql);
@@ -81,6 +110,13 @@ abstract class DbModel extends Model
         return $statement->fetchAll();
     }
 
+    public static function get($id, $tableName)
+    {
+        $statement = self::prepare("SELECT * FROM $tableName WHERE id = $id");
+        $statement->execute();
+        return $statement->fetchObject(static::class);
+    }
+
     public function allOtherTable($tableName)
     {
         $statement = self::prepare("SELECT * FROM $tableName");
@@ -88,23 +124,23 @@ abstract class DbModel extends Model
         return $statement->fetchAll();
     }
 
-    public static function findInOtherTableByID($tableName, $id)
+    public static function findInOtherTableByColumn($tableName, $column, $value)
     {
-        $statement = self::prepare("SELECT * FROM $tableName WHERE id = $id");
+        $statement = self::prepare("SELECT * FROM $tableName WHERE $column = $value");
         $statement->execute();
         return $statement->fetchObject();
     }
 
-    public static function findInOtherTableByColumn($tableName, $column, $value)
+    public static function findInOtherTableByColumnWithCondition($tableName, $column, $value, $colCondition, $conditionValue)
     {
-        $statement = self::prepare("SELECT * FROM $tableName WHERE $column = $value AND id_role = 2");
+        $statement = self::prepare("SELECT * FROM $tableName WHERE $column = $value AND $colCondition = $conditionValue");
         $statement->execute();
         return $statement->fetchObject();
     }
 
     public static function countCompareById($id, $columnToCompare, $tableName)
     {
-        $statement = self::prepare("SELECT COUNT($tableName.$columnToCompare) FROM $tableName WHERE $columnToCompare = $id AND id_role = 3");
+        $statement = self::prepare("SELECT COUNT($tableName.$columnToCompare) FROM $tableName WHERE $columnToCompare = $id");
         $statement->execute();
         return $statement->fetchObject();
     }
@@ -113,13 +149,13 @@ abstract class DbModel extends Model
     {
         $tableName = $this->tableName();
         $statement = self::prepare("DELETE FROM $tableName WHERE id = $id");
-
-        $statement->execute();
-        return true;
+        return $statement->execute();
     }
 
-    public function updatedColumn($teacherId, $classId)
-    {
-        $statement = self::prepare("UPDATE teachers SET id_class = $classId WHERE id = $teacherId");
+    public function assignTeacher($teacherId, $classId) {
+        $tableName = $this->tableName();
+        $statement = self::prepare("UPDATE $tableName SET id_teacher = $teacherId WHERE id = $classId");
+        return $statement->execute();
     }
+
 }

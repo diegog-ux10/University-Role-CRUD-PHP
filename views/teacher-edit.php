@@ -7,6 +7,7 @@ $this->title = "Crear Alumno";
 foreach ($model as $key => $value) {
     $$key = $value;
 }
+
 ?>
 
 <div>
@@ -111,11 +112,24 @@ foreach ($model as $key => $value) {
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
                     Clase Asignada
                 </label>
-                <select name="assigned_class" id="assigned_class" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <select name="id_class" id="id_class" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <?php if(!$assignedClassId): ?>
                     <option value="0">Sin asignar</option>
                     <?php foreach ($classes as $class) : ?>
                         <option value="<?php echo $class["id"] ?>"><?php echo $class["name"] ?></option>
                     <?php endforeach; ?>
+                    <?php else: ?>
+                    <option value="<?php echo $assignedClassId ?>" selected><?php echo $assignedClass ?></option>
+                    <option value="0">Quitar Clase Asignada</option>
+                    <?php foreach ($classes as $class) : ?>
+                        <?php 
+                            if($class["id"] === $assignedClassId) {
+                                continue;
+                            }
+                        ?>
+                        <option value="<?php echo $class["id"] ?>"><?php echo $class["name"] ?></option>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
                 <p class="text-red-500 text-xs italic"><?php echo $model->getFirstError("name"); ?></p>
             </div>
@@ -123,7 +137,7 @@ foreach ($model as $key => $value) {
             <div class="flex items-center justify-between">
                 <a href="/maestros">close</a>
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                    Crear
+                    Guardar Cambios
                 </button>
             </div>
         </form>

@@ -108,6 +108,8 @@ class StudentController extends Controller
             if ($user["id_role"] !== 3) {
                 continue;
             }
+            $enrolledClasses = Student::getEnrolledClassesByStudentId($user["id"]);
+            $user["enrolled_classes"] = $enrolledClasses;
             $data[] = $user;
         }
         return $data;

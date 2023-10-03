@@ -6,7 +6,6 @@ use core\Request;
 use core\Router;
 use core\Response;
 use core\Database;
-use models\User;
 
 class Application
 {
@@ -66,18 +65,8 @@ class Application
             default:
                 break;
         }
-        $this->session->set("user", ["name" => $this->user->{"email"}, "rol" => $rol, "id_class" => $this->user->{"id_class"}, "fullName" => $this->user->{'firstname'} . " " .  $this->user->{'lastname'}, "id_class" => $this->user->{'id_class'}]);
+        $this->session->set("user", ["name" => $this->user->{"email"}, "rol" => $rol, "id_class" => $this->user->{"id_class"}, "fullName" => $this->user->{'firstname'} . " " .  $this->user->{'lastname'}, "id_class" => $this->user->{'id_class'}, 'id' => $this->user->{'id'}]);
         return true;
-    }
-
-    public function getController(): Controller
-    {
-        return $this->controller;
-    }
-
-    public function setController(Controller $controller): void
-    {
-        $this->controller = $controller;
     }
 
     public function logout()
@@ -85,6 +74,7 @@ class Application
         $this->user = null;
         $this->session->remove("user");
     }
+
     public static function isGuest()
     {
         return self::$app->user ? false : true;

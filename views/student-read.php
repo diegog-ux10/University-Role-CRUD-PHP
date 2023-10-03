@@ -5,13 +5,13 @@ use core\Application;
 
 $user = Application::$app->session->get("user");
 
-$studentsAssigned = [];
-foreach($students as $student) {
-    if($student['id_class'] !== $user['id_class']) {
-        continue;
-    }
-    $studentsAssigned[] = $student;
-}
+// $studentsAssigned = [];
+// foreach($students as $student) {
+//     if($student['id_class'] !== $user['id_class']) {
+//         continue;
+//     }
+//     $studentsAssigned[] = $student;
+// }
 
 ?>
 

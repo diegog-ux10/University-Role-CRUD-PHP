@@ -4,12 +4,19 @@ namespace models;
 
 use core\DbModel;
 
-class Classes extends User
+class Classes extends DbModel
 {
+    public string $name = "";
+    public int | NULL $id_teacher = NULL;
 
     public function tableName(): string
     {
         return "classes";
+    }
+
+    public static function primaryKey(): string
+    {
+        return "id";
     }
 
     public function rules(): array
@@ -28,7 +35,7 @@ class Classes extends User
 
     public function attributes(): array
     {
-        return ["name"];
+        return ["name", "id_teacher"];
     }
 
     public function getAllClasses()
@@ -36,9 +43,50 @@ class Classes extends User
         return parent::all();
     }
 
-    public static function getTeacherName($classId)
+    public function isTeacherAssign($teacherId)
     {
-        $teacher = parent::findInOtherTableByColumn('users', 'id_class', $classId);
+        $AssignedClassToTeacher = parent::findOne(["id_teacher" => $teacherId]);
+        if ($AssignedClassToTeacher) {
+            return $AssignedClassToTeacher;
+        } else {
+            return false;
+        }
+    }
+
+    public function saveClass($teacherId)
+    {
+        $createdClass = parent::save();
+        if ($teacherId) {
+            $user = User::get($teacherId, "users");
+            $AssignedClassToTeacher = $this->isTeacherAssign($teacherId);
+            if ($AssignedClassToTeacher) {
+                parent::assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
+            }
+            parent::assignTeacher($user->{'id'}, $createdClass->{'id'});
+            return true;
+        }
+        return true;
+    }
+
+    public function update($id, $teacherId)
+    {
+        parent::updated($id);
+        $AssignedClassToTeacher = $this->isTeacherAssign($teacherId);
+        if ($AssignedClassToTeacher) {
+            parent::assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
+        }
+        if($teacherId) {
+            parent::assignTeacher($teacherId, $id);
+            return true; 
+        } else {
+            parent::assignTeacher('NULL', $id);
+        }
+        return true;
+    }
+
+    public static function getTeacherName($teacherId)
+    {
+        $teacher = parent::findInOtherTableByColumn('users', 'id', $teacherId);
         if ($teacher) {
             return  $teacher->firstname . " " .  $teacher->lastname;
         }
@@ -49,7 +97,7 @@ class Classes extends User
     {
 
         $count = parent::countCompareById($id, $columnToCompare, $tableName);
-        return $count->{'COUNT(users.id_class)'};
+        return $count->{"COUNT($tableName.$columnToCompare)"};
     }
 
     public function getAllTeachers()
@@ -65,13 +113,18 @@ class Classes extends User
             echo "falso";
             continue;
         }
-  
+
         return $teachers;
     }
 
-    public function assignClass($teacherId, $classId)
+    public function getEnrolledClasses()
     {
-        parent::updatedColumn($teacherId, $classId);
-        return true;
+        $enrolledClasses = parent::allOtherTable("enrolled_classes");
+        return $enrolledClasses;
+    }
+
+    public function assignTeacher($teacherId, $classId)
+    {
+        parent::assignTeacher($teacherId, $classId);
     }
 }

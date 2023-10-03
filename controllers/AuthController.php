@@ -12,7 +12,6 @@ use models\User;
 
 class AuthController extends Controller
 {
-    // TODO: Arreglar Login Controller
     public function login(Request $request, Response $response)
     {
         $loginForm = new Login();
@@ -27,31 +26,7 @@ class AuthController extends Controller
             'model' => $loginForm
         ]);
     }
-
-    public function register(Request $request)
-    {
-        $user = new User();
-
-        if ($request->isPost()) {
-
-            $user->loadData($request->getBody());
-            if ($user->validate() && $user->save()) {
-                $userData = User::findOne(["email" => $user->email]);
-                session_start();
-                $_SESSION["user"] = $userData->id;
-                Application::$app->response->redirect("/");
-            }
-            $this->setLayout("auth");
-            return $this->render("register", [
-                "model" => $user
-            ]);
-        }
-        $this->setLayout("auth");
-        return $this->render("register", [
-            "model" => $user
-        ]);
-    }
-
+    
     public function logout(Request $request, Response $response)
     {
         Application::$app->logout();

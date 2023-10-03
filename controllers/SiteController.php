@@ -15,7 +15,6 @@ class SiteController extends Controller
         if (!$user) {
             $response->redirect("/login");
         };
-        //TODO: Si esta Logeado verificar su rol y renderizar vista correspondiente
         $this->setLayout("main");
         return $this->render("dashboard", [
             'user' => $user

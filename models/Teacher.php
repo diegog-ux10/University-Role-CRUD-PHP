@@ -26,9 +26,40 @@ class Teacher extends User
         return parent::all();
     }
 
+    
+    public function saveTeacher($classId)
+    {
+        $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+        $createdUser = parent::save();
+        if($classId) {
+           $class = Classes::get($classId, "classes");
+           $class->assignTeacher($createdUser->{'id'}, $class->{'id'});
+           return true;    
+        }
+        return true;
+    }
+
+    public function updateTeacher($teacherId, $classId)
+    {
+        $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+        parent::updated($teacherId);
+        $class = new Classes();
+        if($classId) {
+            $class = Classes::get($classId, "classes");
+            $class->assignTeacher($teacherId, $class->{'id'});  
+        } else {
+            $AssignedClassToTeacher = $class->isTeacherAssign($teacherId);
+            if ($AssignedClassToTeacher) {
+                $class->assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
+            }
+        }
+        return true;
+    }
+
+
     public static function getAsignedClass($id)
     {
-        return parent::findInOtherTableByID("classes", $id);
+        return parent::findInOtherTableByColumn("classes", "id_teacher" , $id);
     }
     public function delete($id)
     {

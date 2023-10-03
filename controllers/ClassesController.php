@@ -17,10 +17,27 @@ class ClassesController extends Controller
         $model = new Classes();
         $classes = $model->all();
         $data = $this->getDataClasses($classes);
-
+        $enrolledClasses = $model->getEnrolledClasses();
         $this->setLayout("main");
         return $this->render("class-read", [
-            'classes' => $data
+            'classes' => $data,
+            'enrolledClasses' => $enrolledClasses
+        ]);
+    }
+
+    public function getEnrolledClass(Request $request, Response $response)
+    {
+        parent::checkAuth($response);
+
+        $model = new Classes();
+        $classes = $model->all();
+        $data = $this->getDataClasses($classes);
+        $enrolledClasses = $model->getEnrolledClasses();
+
+        $this->setLayout("main");
+        return $this->render("enrolled-class-edit", [
+            'classes' => $data,
+            'enrolledClasses' => $enrolledClasses
         ]);
     }
 
@@ -32,9 +49,12 @@ class ClassesController extends Controller
         $classes = $model->all();
         $data = $this->getDataClasses($classes);
         $teachers = $model->getAllTeachers();
+
         if ($request->isPost()) {
-            $model->loadData($request->getBody());
-            if ($model->validate() && $model->save()) {
+            $body = $request->getBody();
+            $teacherId = $body["id_teacher"] ? $body["id_teacher"] : null;
+            $model->loadData($body);
+            if ($model->validate() && $model->saveClass($teacherId)) {
                 Application::$app->session->set("message", "Clase Creada Exitosamente!");
                 Application::$app->response->redirect("/clases");
             }
@@ -68,8 +88,10 @@ class ClassesController extends Controller
         $classForEdit = $model->findOne(["id" => $classId]);
 
         if ($request->isPost()) {
-            $model->loadData($request->getBody());
-            if ($model->validate() && $model->update($classId)) {
+            $body = $request->getBody();
+            $teacherId = $body["id_teacher"] ? $body["id_teacher"] : null;
+            $model->loadData($body);
+            if ($model->validate() && $model->update($classId, $teacherId)) {
                 Application::$app->session->set("message", "Clase Editada Exitosamente!");
                 Application::$app->response->redirect("/clases");
             }
@@ -108,16 +130,19 @@ class ClassesController extends Controller
     {
         $data = [];
         foreach ($classes as $class) {
-            $teacherName = Classes::getTeacherName($class["id"]);
-            if (!$teacherName) {
+
+            if ($class["id_teacher"]) {
+                $teacherName = Classes::getTeacherName($class["id_teacher"]);
+            } else {
                 $teacherName = "Sin asignar";
             }
-            $enrolled_students = Classes::getCount($class["id"], 'id_class', 'users');
+            $enrolled_students = Classes::getCount($class["id"], 'id_class', 'enrolled_classes');
             if ($enrolled_students === 0) {
                 $enrolled_students = "Sin Alumnos";
             }
             $data[] = ["id" => $class["id"], "name" => $class["name"], "teacher" => $teacherName, "enrolled_students" => $enrolled_students];
         }
+
         return $data;
     }
 }

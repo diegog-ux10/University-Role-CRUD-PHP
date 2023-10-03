@@ -29,4 +29,8 @@ class Student extends User
     public function getAllStudents() {
         return parent::all();
     }
+
+    public static function getEnrolledClassesByStudentId($studentId) {
+       parent::findAllinOtherTable("enrolled_classes", ["id_student" => $studentId]); 
+    }
 }

@@ -24,7 +24,6 @@ class User extends UserModel
     public string $dni = '';
     public int $id_role = 1;
     public int $id_status = 1;
-    public int | null $id_class = null;
     public string $name = '';
 
     public function tableName(): string
@@ -80,7 +79,7 @@ class User extends UserModel
 
     public function attributes(): array
     {
-        return ["email", "password", "firstname", "lastname", "address", "bday", "dni", "id_role", "id_status", "id_class"];
+        return ["email", "password", "firstname", "lastname", "address", "bday", "dni", "id_role", "id_status"];
     }
 
     public function getDisplayName(): string

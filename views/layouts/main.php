@@ -104,7 +104,7 @@ $path = $_SERVER["PATH_INFO"] ?? "/";
                     </a>
                 </li>
                 <li class="mb-1 group sidebar-button">
-                    <a href="#" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
+                    <a href="clases/administrar" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             team_dashboard
                         </span>

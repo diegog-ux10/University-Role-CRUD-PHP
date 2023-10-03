@@ -36,6 +36,7 @@ $app->router->post("/clases/crear-clase", [ClassesController::class, "create"]);
 $app->router->get("/clases/editar-clase", [ClassesController::class, "update"]);
 $app->router->post("/clases/editar-clase", [ClassesController::class, "update"]);
 $app->router->post("/clases/eliminar-clase", [ClassesController::class, "delete"]);
+$app->router->get("/clases/administrar", [ClassesController::class, "getEnrolledClass"]);
 
 $app->router->get("/maestros", [TeacherController::class, "getTeachers"]);
 $app->router->get("/maestros/crear-maestro", [TeacherController::class, "create"]);

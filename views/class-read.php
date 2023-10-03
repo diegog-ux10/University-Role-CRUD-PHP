@@ -5,12 +5,15 @@ use core\Application;
 
 $user = Application::$app->session->get("user");
 
-$enrolledClasses = [];
-foreach($classes as $class) {
-    if($class['id'] !== $user['id_class']) {
-        continue;
+$enrolledClassesForStudent = [];
+foreach ($enrolledClasses as $enrolledclass) {
+    if ($enrolledclass["id_student"] === $user['id']) {
+        foreach ($classes as $class) {
+            if ($class['id'] === $enrolledclass["id_class"]) {
+                $enrolledClassesForStudent[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
+            }
+        }
     }
-    $enrolledClasses[] = $class;
 }
 
 ?>
@@ -87,13 +90,13 @@ foreach($classes as $class) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($enrolledClasses as $class) : ?>
+                    <?php foreach ($enrolledClassesForStudent as $class) : ?>
                         <tr>
                             <td><?php echo $class["id"] ?></td>
                             <td><?php echo $class["name"] ?></td>
-                            <td><?php echo 'sin calificion' ?></td>
+                            <td><?php echo $class["grade"] ?></td>
                             <td><?php echo 'No hay Mensajes' ?></td>
-                        
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -36,8 +36,10 @@ class TeacherController extends Controller
         $data = $this->getDataTeachers($users);
 
         if ($request->isPost()) {
-            $model->loadData($request->getBody());
-            if ($model->validate() && $model->save()) {
+            $body = $request->getBody();
+            $classId = $body['id_class'] ? $body['id_class'] : null;
+            $model->loadData($body);
+            if ($model->validate() && $model->saveTeacher($classId)) {
                 Application::$app->session->set("message", "Maestro Creado Exitosamente!");
                 Application::$app->response->redirect("/maestros");
             }
@@ -73,8 +75,10 @@ class TeacherController extends Controller
         $teacherForEdit = $model->findOne(["id" => $teacherId]);
 
         if ($request->isPost()) {
-            $model->loadData($request->getBody());
-            if ($model->validateUpdate() && $model->update($teacherId)) {
+            $body = $request->getBody();
+            $classId = $body['id_class'] ? $body['id_class'] : null;
+            $model->loadData($body);
+            if ($model->validateUpdate() && $model->updateTeacher($teacherId, $classId)) {
                 Application::$app->session->set("message", "Maestro Actualizado Exitosamente!");
                 Application::$app->response->redirect("/maestros");
             }
@@ -87,12 +91,15 @@ class TeacherController extends Controller
         }
 
         if ($request->isGet()) {
+            $assigned_class = Teacher::getAsignedClass($teacherId);
             $this->setLayout("main");
             return $this->render("teacher-edit", [
                 "model" => $teacherForEdit,
                 'teachers' => $data,
                 'id' => $teacherId,
-                'classes' => $classes
+                'classes' => $classes,
+                'assignedClass' => $assigned_class->name ? $assigned_class->name : null,
+                'assignedClassId' => $assigned_class->id ? $assigned_class->id : null,
             ]);
         }
     }
@@ -112,12 +119,14 @@ class TeacherController extends Controller
     {
         $data = [];
         foreach ($users as $user) {
-            if($user["id_role"] !== 2) {
+            if ($user["id_role"] !== 2) {
                 continue;
             }
+
             $teacherName = $user["firstname"] . " " . $user["lastname"];
-            if ($user["id_class"]) {
-                $assigned_class = Teacher::getAsignedClass($user["id_class"]);
+
+            $assigned_class = Teacher::getAsignedClass($user["id"]);
+            if ($assigned_class) {
                 $assignedClassName = $assigned_class->name;
             } else {
                 $assignedClassName = "Sin Asignar";

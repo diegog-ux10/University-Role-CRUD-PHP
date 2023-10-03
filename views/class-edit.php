@@ -1,5 +1,9 @@
 <?php
 
+use core\Application;
+
+$user = Application::$app->session->get("user");
+
 $this->title = "Crear Clase";
 
 /**@var $model \models\Student */
@@ -8,7 +12,11 @@ foreach ($model as $key => $value) {
     $$key = $value;
 }
 
+
+
 ?>
+
+<?php if ($user["rol"] === "ADMIN") : ?>
 
 <div>
     <h1 class="mb-2">Lista de Clases</h1>
@@ -56,6 +64,7 @@ foreach ($model as $key => $value) {
     </div>
 </div>
 
+
 <div class="fixed h-screen w-full top-0 left-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)] z-50">
     <div class="w-full max-w-xs">
         <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="" method="post">
@@ -81,15 +90,20 @@ foreach ($model as $key => $value) {
             </div> 
             <input type="number" name="id" value="<?php echo $id ?>" hidden>
             <div class="flex items-center justify-between">
-                <a href="/alumnos">close</a>
+                <a href="/clases">close</a>
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                    Crear
+                    Guardar Cambios
                 </button>
             </div>
         </form>
     </div>
 </div>
 
+<?php endif; ?>
+
+<?php if ($user["rol"] === "STUDENT") : ?>
+    
+<?php endif; ?>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
