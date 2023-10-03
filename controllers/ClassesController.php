@@ -125,24 +125,25 @@ class ClassesController extends Controller
     public function getEnrolledClassDataDisplay($classes, $enrolledClasses, $userId)
     {
         $enrolledClassesForStudent = [];
-        $notEnrolledClassesForStudent = [];
-
+        $NotEnrolledClassesForStudent = [];
         if ($enrolledClasses) {
-            $notEnrolledClassesForStudent = Classes::getNotRegisteredClass($userId);
+            foreach ($enrolledClasses as $enrolledclass) {
+                if ($enrolledclass["id_student"] === $userId) {
+                    foreach ($classes as $class) {
+                        if ($class['id'] === $enrolledclass["id_class"]) {
+                            $enrolledClassesForStudent[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
+                        } else {
+                            $NotEnrolledClassesForStudent[] = $class;
+                        }
+                    }
+                }
+            }
         } else {
-            $notEnrolledClassesForStudent = $classes;
+            $NotEnrolledClassesForStudent = $classes;
         }
-
-        echo '<pre>';
-        var_dump($enrolledClassesForStudent);
-        echo '</pre>';
-        echo '<pre>';
-        var_dump($notEnrolledClassesForStudent);
-        echo '</pre>';
-        exit;
         return [
             "enrolled_classes" => $enrolledClassesForStudent,
-            "not_enrolled_classes" =>  $notEnrolledClassesForStudent
+            "not_enrolled_classes" =>  $NotEnrolledClassesForStudent
         ];
     }
 
