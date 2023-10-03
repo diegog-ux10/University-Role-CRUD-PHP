@@ -42,13 +42,30 @@ class User extends UserModel
         return parent::save();
     }
 
-    public function update($id)
+    public function updateUser($id, $role)
     {
         $password = $this->password;
         if ($password) {
             $this->password = password_hash($this->password, PASSWORD_DEFAULT);
         }
-        return parent::updated($id);
+        $role =  intval($role);
+        $user = parent::get($id, 'users');
+        if ($role !== $user->{"id_role"}) {
+            if ($user->{"id_role"} === 2) {
+                $classModel = new Classes();
+                $AssignedClassToTeacher = $classModel->isTeacherAssign($user->{"id"});
+                if ($AssignedClassToTeacher) {
+                    $classModel->assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
+                } else {
+                    return true;
+                }
+            } elseif ($user->{"id_role"} === 3) {
+                $statement = Application::$app->db->pdo->prepare("DELETE FROM enrolled_classes WHERE id_student = $id");
+                $statement->execute();
+            }
+        }
+        parent::update($id);
+        return true;
     }
 
     public function rules(): array
@@ -67,12 +84,7 @@ class User extends UserModel
     public function rulesUpdate(): array
     {
         return [
-            // "email" => [self::RULE_REQUIRED, self::RULE_EMAIL, [self::RULE_UNIQUE, "class" => self::class]],
-            // // "password" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 6], [self::RULE_MAX, "max" => 24]],
-            // "firstname" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 3], [self::RULE_MAX, "max" => 100]],
-            // "lastname" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 3], [self::RULE_MAX, "max" => 100]],
-            // "address" => [self::RULE_REQUIRED],
-            // "bday" => [self::RULE_REQUIRED],
+            // Reglas para actualizacion
         ];
     }
 

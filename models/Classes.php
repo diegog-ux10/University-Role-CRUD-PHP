@@ -2,6 +2,7 @@
 
 namespace models;
 
+use core\Application;
 use core\DbModel;
 
 class Classes extends DbModel
@@ -68,16 +69,16 @@ class Classes extends DbModel
         return true;
     }
 
-    public function update($id, $teacherId)
+    public function updateClass($id, $teacherId)
     {
-        parent::updated($id);
+        parent::update($id);
         $AssignedClassToTeacher = $this->isTeacherAssign($teacherId);
         if ($AssignedClassToTeacher) {
             parent::assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
         }
-        if($teacherId) {
+        if ($teacherId) {
             parent::assignTeacher($teacherId, $id);
-            return true; 
+            return true;
         } else {
             parent::assignTeacher('NULL', $id);
         }
@@ -117,14 +118,37 @@ class Classes extends DbModel
         return $teachers;
     }
 
-    public function getEnrolledClasses()
+    public function getEnrolledClasses($id)
     {
-        $enrolledClasses = parent::allOtherTable("enrolled_classes");
+        $enrolledClasses = parent::findAllinOtherTable("enrolled_classes", ["id_student" => $id]);
         return $enrolledClasses;
     }
 
     public function assignTeacher($teacherId, $classId)
     {
         parent::assignTeacher($teacherId, $classId);
+    }
+
+    public function deleteEnrolledClass($classId, $studentId)
+    {
+        $statement = Application::$app->db->pdo->prepare("DELETE FROM enrolled_classes WHERE id_student = $studentId AND id_class = $classId");
+        return $statement->execute();
+    }
+
+    public function registerClasses($classesId, $studentId)
+    {
+        foreach ($classesId as $classId) {
+            $classId = intval($classId);
+            $statement = Application::$app->db->pdo->prepare("INSERT INTO enrolled_classes (id_class, id_student) VALUES ($classId, $studentId)");
+            $statement->execute();
+        }
+        return true;
+    }
+
+    public static function getNotRegisteredClass($userId)
+    {
+        $statement = Application::$app->db->pdo->prepare("SELECT * FROM classes WHERE id_student != $userId");
+        $statement->execute();
+        return $statement->fetchAll();
     }
 }

@@ -42,7 +42,7 @@ class Teacher extends User
     public function updateTeacher($teacherId, $classId)
     {
         $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-        parent::updated($teacherId);
+        parent::update($teacherId);
         $class = new Classes();
         if($classId) {
             $class = Classes::get($classId, "classes");

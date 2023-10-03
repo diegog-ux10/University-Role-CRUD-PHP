@@ -28,10 +28,7 @@
                         <td><?php echo $teacher["email"] ?></td>
                         <td><?php echo $teacher["address"] ?></td>
                         <td><?php echo $teacher["bday"] ?></td>
-                        <td>
-                            <?php
-                            echo $teacher["asigned_class"] ?>
-                        </td>
+                        <td><?php echo $teacher["assigned_class"] ?></td>
                         <td class="flex gap-4">
                             <a href="<?php echo "maestros/editar-maestro?id=" .  $teacher["id"] ?>">
                                 <span class="material-symbols-outlined text-blue-600">

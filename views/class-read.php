@@ -5,16 +5,7 @@ use core\Application;
 
 $user = Application::$app->session->get("user");
 
-$enrolledClassesForStudent = [];
-foreach ($enrolledClasses as $enrolledclass) {
-    if ($enrolledclass["id_student"] === $user['id']) {
-        foreach ($classes as $class) {
-            if ($class['id'] === $enrolledclass["id_class"]) {
-                $enrolledClassesForStudent[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
-            }
-        }
-    }
-}
+
 
 ?>
 
@@ -90,7 +81,7 @@ foreach ($enrolledClasses as $enrolledclass) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($enrolledClassesForStudent as $class) : ?>
+                    <?php foreach ($enrolledClasses["enrolled_classes"] as $class) : ?>
                         <tr>
                             <td><?php echo $class["id"] ?></td>
                             <td><?php echo $class["name"] ?></td>

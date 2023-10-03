@@ -39,8 +39,9 @@ $path = $_SERVER["PATH_INFO"] ?? "/";
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
     <link rel="stylesheet" href="./../../dist/output.css">
-
+    <link rel="stylesheet" href="./../../dist/css/inputRadio.css">
 </head>
 
 <body class="text-gray-800 font-inter">
@@ -58,7 +59,7 @@ $path = $_SERVER["PATH_INFO"] ?? "/";
         <ul class="mt-4">
             <?php if ($user["rol"] === "ADMIN") : ?>
                 <li class="mb-1 group sidebar-button <?php if($path === "/") echo "active" ?>">
-                    <a href="usuarios/permisos" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
+                    <a href="/permisos" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             manage_accounts
                         </span>
@@ -104,7 +105,7 @@ $path = $_SERVER["PATH_INFO"] ?? "/";
                     </a>
                 </li>
                 <li class="mb-1 group sidebar-button">
-                    <a href="clases/administrar" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
+                    <a href="/administrar-clases" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-600 group-[.active]:text-white">
                         <span class="material-symbols-outlined text-white mr-3 text-lg">
                             team_dashboard
                         </span>

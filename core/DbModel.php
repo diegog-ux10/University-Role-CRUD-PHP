@@ -32,10 +32,31 @@ abstract class DbModel extends Model
         return $statement->fetchObject();
     }
 
-    public  function updated($id)
+    public  function update($id)
     {
         $tableName = $this->tableName();
         $attributes = $this->attributes();
+        $attributesToUpdate = [];
+        foreach ($attributes as $attribute) {
+            if ($this->{$attribute}) {
+                $attributesToUpdate[] = $attribute;
+            }
+        }
+        $params = [];
+        foreach ($attributesToUpdate as $attr) {
+            $params[] = "$attr" . "=" . ":$attr";
+        }
+        $statement = self::prepare("UPDATE $tableName SET " . implode(',', $params) . " WHERE id = $id");
+        foreach ($attributesToUpdate as $attribute) {
+
+            $statement->bindValue(":$attribute", $this->{$attribute});
+        }
+        return $statement->execute();  
+    }
+
+    public  function updatedSpe($id, $attributes)
+    {
+        $tableName = $this->tableName();
         $attributesToUpdate = [];
         foreach ($attributes as $attribute) {
             if ($this->{$attribute}) {

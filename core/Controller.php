@@ -24,4 +24,10 @@ class Controller
         };
         return true;
     }
+
+    public function getLoggedUserId()
+    {
+        $user = Application::$app->session->get("user");
+        return $user['id'];
+    }
 }

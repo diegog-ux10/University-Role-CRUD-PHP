@@ -17,7 +17,9 @@ $app = new Application($_SERVER["DOCUMENT_ROOT"], $config);
 $app->router->get("/", [SiteController::class, "getDashboard"]);
 $app->router->get("/index.php", [SiteController::class, "getDashboard"]);
 
-$app->router->get("/usuarios/permisos", [UserController::class, "manageUsers"]);
+$app->router->get("/permisos", [UserController::class, "manageUsers"]);
+$app->router->get("/permisos/editar-permisos", [UserController::class, "updateRoles"]);
+$app->router->post("/permisos/editar-permisos", [UserController::class, "updateRoles"]);
 
 $app->router->get("/login", [AuthController::class, "login"]);
 $app->router->post("/login", [AuthController::class, "login"]);
@@ -36,7 +38,9 @@ $app->router->post("/clases/crear-clase", [ClassesController::class, "create"]);
 $app->router->get("/clases/editar-clase", [ClassesController::class, "update"]);
 $app->router->post("/clases/editar-clase", [ClassesController::class, "update"]);
 $app->router->post("/clases/eliminar-clase", [ClassesController::class, "delete"]);
-$app->router->get("/clases/administrar", [ClassesController::class, "getEnrolledClass"]);
+$app->router->get("/administrar-clases", [ClassesController::class, "getEnrolledClass"]);
+$app->router->post("/administrar-clases", [ClassesController::class, "getEnrolledClass"]);
+$app->router->post("/eliminar-clase-registrada", [ClassesController::class, "deleteEnrolledClass"]);
 
 $app->router->get("/maestros", [TeacherController::class, "getTeachers"]);
 $app->router->get("/maestros/crear-maestro", [TeacherController::class, "create"]);

@@ -2,21 +2,7 @@
 
 use core\Application;
 
-$user = Application::$app->session->get("user");
-
-$notenrolledClassesForStudent = [];
-$enrolledClassesForStudent = [];
-foreach ($enrolledClasses as $enrolledclass) {
-    if ($enrolledclass["id_student"] === $user['id']) {
-        foreach ($classes as $class) {
-            if ($class['id'] === $enrolledclass["id_class"]) {
-                $enrolledClassesForStudent[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
-            } else {
-                $notenrolledClassesForStudent[] = $class;
-            }
-        }
-    }
-}
+$user = Application::$app->session->get("user")
 
 ?>
 
@@ -40,17 +26,22 @@ foreach ($enrolledClasses as $enrolledclass) {
                         </tr>
                     </thead>
                     <tbody>
-                        <? foreach ($enrolledClassesForStudent as $class) : ?>
-                            <tr class="odd:bg-slate-200">
-                                <td class="px-4"><?php echo $class["id"] ?></td>
-                                <td><?php echo $class["name"] ?></td>
+                        <?php foreach ($enrolledClasses['enrolled_classes'] as $class) : ?>
+                            <tr class="odd:bg-slate-200 py-2">
+                                <td class="px-4"><?php echo $class['id'] ?></td>
+                                <td><?php echo $class['name'] ?></td>
                                 <td class="flex justify-center">
-                                    <span class="material-symbols-outlined text-red-600">
-                                        close
-                                    </span>
+                                    <form action="/eliminar-clase-registrada" method="post">
+                                        <input type="number" value="<?php echo $class['id'] ?>" hidden name="id">
+                                        <button type="submit" class="text-red-600">
+                                            <span class="material-symbols-outlined">
+                                                person_remove
+                                            </span>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
-                        <? endforeach; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -61,25 +52,38 @@ foreach ($enrolledClasses as $enrolledclass) {
                 <h2>Materias para inscribir</h2>
             </div>
             <div class="border border-gray-500 py-3 px-4 w-full">
-                <form action="/clases/administrar" method="post">
-                    <label for="enrolled_class" class="font-bold">Selecciona la(s) Clase(s) usa la tecla ctrl</label>
-                    <select name="enrolled_classes" id="" multiple class="w-full">
-                        <?php foreach ($notenrolledClassesForStudent as $class) :  ?>
-                            <option value="<?php echo $class['id'] ?>"><?php echo $class['name'] ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <button class="ml-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Inscribir</button>
-                </form>
+                <?php if (count($enrolledClasses['not_enrolled_classes']) > 0) : ?>
+                    <form action="/administrar-clases" method="post">
+                        <div class="mb-4">
+                            <label for="enrolled_class" class="font-bold">Selecciona la(s) Clase(s) usa la tecla ctrl</label>
+                            <select name="enrolledClasses[]" id="enrolled_class" multiple class="w-full">
+                                <?php foreach ($enrolledClasses['not_enrolled_classes']  as $class) :  ?>
+                                    <option value="<?php echo $class['id'] ?>"><?php echo $class['name'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <button class="ml-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Inscribir</button>
+                    </form>
+
+                <?php else : ?>
+                    <h2>Ya estas inscrito a todas las clases</h2>
+                <?php endif; ?>
             </div>
         </div>
 
     </div>
 <?php endif; ?>
 
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $("#classesTable").dataTable()
+</script>
+<script>
+    new MultiSelectTag('enrolled_class')
+    console.log("hola");
 </script>

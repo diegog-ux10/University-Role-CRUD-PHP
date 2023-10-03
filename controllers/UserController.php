@@ -25,73 +25,36 @@ class UserController extends Controller
         ]);
     }
 
-    public function create(Request $request, Response $response)
+    public function updateRoles(Request $request, Response $response)
     {
         parent::checkAuth($response);
 
-        $model = new Teacher();
-        $classes = $model->getAllClasses();
+        $userId = $request->getBody()["id"];
+
+        $model = new User();
         $users = $model->all();
-        $data = $this->getDataTeachers($users);
+        $userForEdit = $model->findOne(["id" => $userId]);
 
         if ($request->isPost()) {
-            $model->loadData($request->getBody());
-            if ($model->validate() && $model->save()) {
-                Application::$app->session->set("message", "Maestro Creado Exitosamente!");
-                Application::$app->response->redirect("/maestros");
+            $body = $request->getBody();
+            $role = $body['id_role'] ? $body['id_role'] : null;
+            $model->loadData($body);
+            if ($model->validateUpdate() && $model->updateUser($userId, $role)) {
+                Application::$app->session->set("message", "Permisos Actualizado Exitosamente!");
+                Application::$app->response->redirect("/permisos");
             }
             $this->setLayout("main");
-            return $this->render("teacher-create", [
-                "model" => $model,
-                'teachers' => $data,
-                'classes' => $classes
-
+            return $this->render("user-admin", [
+                "model" => $userForEdit,
+                'users' => $users,
             ]);
         }
 
         if ($request->isGet()) {
             $this->setLayout("main");
-            return $this->render("teacher-create", [
-                "model" => $model,
-                'teachers' => $data,
-                'classes' => $classes
-            ]);
-        }
-    }
-
-    public function update(Request $request, Response $response)
-    {
-        parent::checkAuth($response);
-
-        $teacherId = $request->getBody()["id"];
-
-        $model = new Teacher();
-        $users = $model->all();
-        $data = $this->getDataTeachers($users);
-        $classes = $model->getAllClasses();
-        $teacherForEdit = $model->findOne(["id" => $teacherId]);
-
-        if ($request->isPost()) {
-            $model->loadData($request->getBody());
-            if ($model->validateUpdate() && $model->update($teacherId)) {
-                Application::$app->session->set("message", "Maestro Actualizado Exitosamente!");
-                Application::$app->response->redirect("/maestros");
-            }
-            $this->setLayout("main");
-            return $this->render("teacher-edit", [
-                "model" => $teacherForEdit,
-                'teachers' => $data,
-                'classes' => $classes
-            ]);
-        }
-
-        if ($request->isGet()) {
-            $this->setLayout("main");
-            return $this->render("teacher-edit", [
-                "model" => $teacherForEdit,
-                'teachers' => $data,
-                'id' => $teacherId,
-                'classes' => $classes
+            return $this->render("user-admin", [
+                "model" => $userForEdit,
+                'users' => $users,
             ]);
         }
     }

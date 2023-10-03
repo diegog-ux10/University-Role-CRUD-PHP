@@ -122,16 +122,14 @@ class TeacherController extends Controller
             if ($user["id_role"] !== 2) {
                 continue;
             }
-
             $teacherName = $user["firstname"] . " " . $user["lastname"];
-
             $assigned_class = Teacher::getAsignedClass($user["id"]);
             if ($assigned_class) {
                 $assignedClassName = $assigned_class->name;
             } else {
                 $assignedClassName = "Sin Asignar";
             }
-            $data[] = ["id" => $user["id"], "name" => $teacherName, "email" => $user["email"], "address" => $user["address"], "bday" => $user["bday"], "asigned_class" => $assignedClassName];
+            $data[] = ["id" => $user["id"], "name" => $teacherName, "email" => $user["email"], "address" => $user["address"], "bday" => $user["bday"], "assigned_class" => $assignedClassName];
         }
         return $data;
     }

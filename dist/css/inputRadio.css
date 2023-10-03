@@ -1,0 +1,26 @@
+input[type="radio"] + label span {
+  transition: background 0.2s, transform 0.2s;
+}
+
+input[type="radio"] + label span:hover,
+input[type="radio"] + label:hover span {
+  transform: scale(1.2);
+}
+
+input[type="radio"]#active:checked + label span {
+  background-color: #08ff29;
+  box-shadow: 0px 0px 0px 2px white inset;
+}
+
+input[type="radio"]#inactive:checked + label span {
+    background-color: #ff1008;
+    box-shadow: 0px 0px 0px 2px white inset;
+  }
+
+input[type="radio"]#active:checked + label {
+  color: #08ff29; 
+}
+
+input[type="radio"]#inactive:checked + label {
+    color: #ff1008; 
+  }
