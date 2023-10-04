@@ -2,7 +2,11 @@
 
 use core\Application;
 
-$user = Application::$app->session->get("user")
+$user = Application::$app->session->get("user");
+
+if ($user["rol"] !== "STUDENT") {
+    $user = Application::$app->response->redirect("/unauthorized");
+}
 
 ?>
 
@@ -26,7 +30,7 @@ $user = Application::$app->session->get("user")
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($enrolledClasses['enrolled_classes'] as $class) : ?>
+                        <?php foreach ($enrolled_classes['enrolled_classes'] as $class) : ?>
                             <tr class="odd:bg-slate-200 py-2">
                                 <td class="px-4"><?php echo $class['id'] ?></td>
                                 <td><?php echo $class['name'] ?></td>
@@ -52,12 +56,12 @@ $user = Application::$app->session->get("user")
                 <h2>Materias para inscribir</h2>
             </div>
             <div class="border border-gray-500 py-3 px-4 w-full">
-                <?php if (count($enrolledClasses['not_enrolled_classes']) > 0) : ?>
+                <?php if (count($enrolled_classes['not_enrolled_classes']) > 0) : ?>
                     <form action="/administrar-clases" method="post">
                         <div class="mb-4">
                             <label for="enrolled_class" class="font-bold">Selecciona la(s) Clase(s) usa la tecla ctrl</label>
                             <select name="enrolledClasses[]" id="enrolled_class" multiple class="w-full">
-                                <?php foreach ($enrolledClasses['not_enrolled_classes']  as $class) :  ?>
+                                <?php foreach ($enrolled_classes['not_enrolled_classes']  as $class) :  ?>
                                     <option value="<?php echo $class['id'] ?>"><?php echo $class['name'] ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -85,5 +89,4 @@ $user = Application::$app->session->get("user")
 </script>
 <script>
     new MultiSelectTag('enrolled_class')
-    console.log("hola");
 </script>

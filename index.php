@@ -16,6 +16,7 @@ $app = new Application($_SERVER["DOCUMENT_ROOT"], $config);
 
 $app->router->get("/", [SiteController::class, "getDashboard"]);
 $app->router->get("/index.php", [SiteController::class, "getDashboard"]);
+$app->router->get("/unauthorized", [SiteController::class, "unauthorized"]);
 
 $app->router->get("/permisos", [UserController::class, "manageUsers"]);
 $app->router->get("/permisos/editar-permisos", [UserController::class, "updateRoles"]);

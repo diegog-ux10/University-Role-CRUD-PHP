@@ -7,25 +7,22 @@ use core\Controller;
 use core\Request;
 use core\Response;
 use models\Student;
-use models\StudentEdit;
-use models\User;
 
 class StudentController extends Controller
 {
     public function getStudents(Request $request, Response $response)
     {
         parent::checkAuth($response);
-        $loggedUserId = parent::getLoggedUserId();
+        $logged_user_Id = parent::getLoggedUserId();
         $model = new Student();
         $users = $model->all();
-        $data = $this->getAllStudents($users);
-        $assignedStudents = $this->getAllAssignedStudents($loggedUserId);
-
+        $data = $model->getAllStudents($users);
+        $assigned_students = $model->getAllAssignedStudents($logged_user_Id);
         $this->setLayout("main");
         return $this->render("student-read", [
             'students' => $data,
             'model' => $model,
-            'assignedStudents' => $assignedStudents
+            'assignedStudents' => $assigned_students
         ]);
     }
 
@@ -34,8 +31,7 @@ class StudentController extends Controller
         parent::checkAuth($response);
         $model = new Student();
         $users = $model->all();
-        $data = $this->getAllStudents($users);
-
+        $data = $model->getAllStudents($users);
         if ($request->isPost()) {
             $model->loadData($request->getBody());
             if ($model->validate() && $model->save()) {
@@ -60,23 +56,23 @@ class StudentController extends Controller
 
     public function update(Request $request, Response $response)
     {
-        $studentId = $request->getBody()["id"];
+        $student_id = $request->getBody()["id"];
         parent::checkAuth($response);
 
         $model = new Student();
         $users = $model->all();
-        $data = $this->getAllStudents($users);
-        $studentForEdit = $model->findOne(["id" => $studentId]);
+        $data = $model->getAllStudents($users);
+        $student_for_edit = $model->findOne(["id" => $student_id]);
 
         if ($request->isPost()) {
             $model->loadData($request->getBody());
-            if ($model->validateUpdate() && $model->update($studentId)) {
+            if ($model->validateUpdate() && $model->update($student_id)) {
                 Application::$app->session->set("message", "Estudiante Actualizado Exitosamente!");
                 Application::$app->response->redirect("/alumnos");
             }
             $this->setLayout("main");
             return $this->render("student-edit", [
-                "model" => $studentForEdit,
+                "model" => $student_for_edit,
                 'students' => $data
             ]);
         }
@@ -84,59 +80,21 @@ class StudentController extends Controller
         if ($request->isGet()) {
             $this->setLayout("main");
             return $this->render("student-edit", [
-                "model" => $studentForEdit,
+                "model" => $student_for_edit,
                 'students' => $data,
-                'id' => $studentId
+                'id' => $student_id
             ]);
         }
     }
 
     public function delete(Request $request, Response $response)
     {
-        $studentId = $request->getBody()["id"];
-
         parent::checkAuth($response);
-
+        $student_id = $request->getBody()["id"];
         $model = new Student();
-        if ($model->delete($studentId)) {
+        if ($model->delete($student_id)) {
             Application::$app->session->set("message", "Estudiante Eliminado Exitosamente!");
             Application::$app->response->redirect("/alumnos");
         };
-    }
-
-    public function getAllStudents($users)
-    {
-        $data = [];
-        foreach ($users as $user) {
-            if ($user["id_role"] !== 3) {
-                continue;
-            }
-            $enrolledClasses = Student::getEnrolledClassesByStudentId($user["id"]);
-            $user["enrolled_classes"] = $enrolledClasses;
-            $data[] = $user;
-        }
-        return $data;
-    }
-
-    public function getAllAssignedStudents($userId)
-    {
-        $statement = Application::$app->db->pdo->prepare("SELECT * FROM classes WHERE id_teacher = $userId");
-        $statement->execute();
-        $class = $statement->fetchObject();
-        if ($class) {
-            $classId = $class->{'id'};
-            $statement = Application::$app->db->pdo->prepare("SELECT * FROM enrolled_classes WHERE id_class = $classId");
-            $statement->execute();
-            $registeredStudents = $statement->fetchAll();
-            $data = [];
-            foreach ($registeredStudents as $register) {
-                $studentId = $register['id_student'];
-                $statement = Application::$app->db->pdo->prepare("SELECT * FROM users WHERE id = $studentId");
-                $statement->execute();
-                $student = $statement->fetchObject();
-                $data[] = $student;
-            }
-        }
-        return $data;
     }
 }

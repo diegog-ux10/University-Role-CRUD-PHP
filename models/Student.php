@@ -23,14 +23,48 @@ class Student extends User
 
     public function attributes(): array
     {
-        return ["email", "firstname", "lastname" , "address", "dni" ,"bday", "id_role"];
+        return ["email", "firstname", "lastname", "address", "dni", "bday", "id_role"];
     }
 
-    public function getAllStudents() {
-        return parent::all();
+    public static function getEnrolledClassesByStudentId($student_id)
+    {
+        parent::findAllinOtherTable("enrolled_classes", ["id_student" => $student_id]);
     }
 
-    public static function getEnrolledClassesByStudentId($studentId) {
-       parent::findAllinOtherTable("enrolled_classes", ["id_student" => $studentId]); 
+    public function getAllAssignedStudents($user_id)
+    {
+        $data = [];
+        $statement = Application::$app->db->pdo->prepare("SELECT * FROM classes WHERE id_teacher = $user_id");
+        $statement->execute();
+        $class = $statement->fetchObject();
+        if ($class) {
+            $class_id = $class->{'id'};
+            $statement = Application::$app->db->pdo->prepare("SELECT * FROM enrolled_classes WHERE id_class = $class_id");
+            $statement->execute();
+            $registered_students = $statement->fetchAll();
+            $data = [];
+            foreach ($registered_students as $register) {
+                $student_id = $register['id_student'];
+                $statement = Application::$app->db->pdo->prepare("SELECT * FROM users WHERE id = $student_id");
+                $statement->execute();
+                $student = $statement->fetchObject();
+                $data[] = $student;
+            }
+        }
+        return $data;
+    }
+
+    public function getAllStudents($users)
+    {
+        $data = [];
+        foreach ($users as $user) {
+            if ($user["id_role"] !== 3) {
+                continue;
+            }
+            $enrolled_classes = self::getEnrolledClassesByStudentId($user["id"]);
+            $user["enrolled_classes"] = $enrolled_classes;
+            $data[] = $user;
+        }
+        return $data;
     }
 }

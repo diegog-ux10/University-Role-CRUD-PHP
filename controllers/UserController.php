@@ -29,17 +29,17 @@ class UserController extends Controller
     {
         parent::checkAuth($response);
 
-        $userId = $request->getBody()["id"];
+        $user_id = $request->getBody()["id"];
 
         $model = new User();
         $users = $model->all();
-        $userForEdit = $model->findOne(["id" => $userId]);
+        $userForEdit = $model->findOne(["id" => $user_id]);
 
         if ($request->isPost()) {
             $body = $request->getBody();
             $role = $body['id_role'] ? $body['id_role'] : null;
             $model->loadData($body);
-            if ($model->validateUpdate() && $model->updateUser($userId, $role)) {
+            if ($model->validateUpdate() && $model->updateUser($user_id, $role)) {
                 Application::$app->session->set("message", "Permisos Actualizado Exitosamente!");
                 Application::$app->response->redirect("/permisos");
             }
@@ -62,9 +62,9 @@ class UserController extends Controller
     public function delete(Request $request, Response $response)
     {
         parent::checkAuth($response);
-        $teacherId = $request->getBody()["id"];
+        $teacher_id = $request->getBody()["id"];
         $model = new Teacher();
-        if ($model->delete($teacherId)) {
+        if ($model->delete($teacher_id)) {
             Application::$app->session->set("message", "Maestro Eliminado Exitosamente!");
             Application::$app->response->redirect("/maestros");
         };
@@ -77,14 +77,14 @@ class UserController extends Controller
             if($user["id_role"] !== 2) {
                 continue;
             }
-            $teacherName = $user["firstname"] . " " . $user["lastname"];
+            $teacher_name = $user["firstname"] . " " . $user["lastname"];
             if ($user["id_class"]) {
                 $assigned_class = Teacher::getAsignedClass($user["id_class"]);
                 $assignedClassName = $assigned_class->name;
             } else {
                 $assignedClassName = "Sin Asignar";
             }
-            $data[] = ["id" => $user["id"], "name" => $teacherName, "email" => $user["email"], "address" => $user["address"], "bday" => $user["bday"], "asigned_class" => $assignedClassName];
+            $data[] = ["id" => $user["id"], "name" => $teacher_name, "email" => $user["email"], "address" => $user["address"], "bday" => $user["bday"], "asigned_class" => $assignedClassName];
         }
         return $data;
     }

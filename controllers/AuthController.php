@@ -8,22 +8,21 @@ use core\Controller;
 use core\Request;
 use core\Response;
 use models\Login;
-use models\User;
 
 class AuthController extends Controller
 {
     public function login(Request $request, Response $response)
     {
-        $loginForm = new Login();
+        $login_form = new Login();
         if ($request->isPost()) {
-            $loginForm->loadData($request->getBody());
-            if ($loginForm->validate() && $loginForm->login()) {
+            $login_form->loadData($request->getBody());
+            if ($login_form->validate() && $login_form->login()) {
                 $response->redirect("/");
             }
         }
         $this->setLayout("auth");
         return $this->render("login", [
-            'model' => $loginForm
+            'model' => $login_form
         ]);
     }
     

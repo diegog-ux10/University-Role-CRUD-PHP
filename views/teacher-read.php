@@ -1,3 +1,12 @@
+<?php
+
+use core\Application;
+
+$user = Application::$app->session->get("user");
+if ($user["rol"] !== "ADMIN") {
+    Application::$app->response->redirect("/unauthorized");
+}
+?>
 <div>
     <h1 class="mb-2">Lista de Maestros</h1>
 </div>

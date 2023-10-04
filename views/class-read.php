@@ -5,7 +5,9 @@ use core\Application;
 
 $user = Application::$app->session->get("user");
 
-
+if ($user["rol"] !== "ADMIN" && $user["rol"] !== "STUDENT") {
+    Application::$app->response->redirect("/unauthorized");
+}
 
 ?>
 
@@ -81,7 +83,7 @@ $user = Application::$app->session->get("user");
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($enrolledClasses["enrolled_classes"] as $class) : ?>
+                    <?php foreach ($enrolled_classes["enrolled_classes"] as $class) : ?>
                         <tr>
                             <td><?php echo $class["id"] ?></td>
                             <td><?php echo $class["name"] ?></td>

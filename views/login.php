@@ -1,9 +1,5 @@
 <?php
 
-$this->title = "Login";
-
-/**@var $model \models\User */
-
 foreach ($model as $key => $value) {
     $$key = $value;
 }

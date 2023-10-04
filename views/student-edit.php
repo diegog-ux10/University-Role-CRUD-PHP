@@ -1,15 +1,19 @@
 <?php
 
-$this->title = "Crear Alumno";
-
-/**@var $model \models\Student */
+use core\Application;
 
 foreach ($model as $key => $value) {
     $$key = $value;
 }
 
+$user = Application::$app->session->get("user");
+
+if ($user["rol"] !== "ADMIN") {
+    Application::$app->response->redirect("/unauthorized");
+}
 
 ?>
+
 
 
 <div>

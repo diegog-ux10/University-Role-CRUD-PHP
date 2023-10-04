@@ -22,16 +22,16 @@ class Database
         echo '[' . date('Y-m-d H:i:s') . '] - ' . $message . PHP_EOL;
     }
 
-    public function getUserData(string $userId)
+    public function getUserData(string $user_id)
     {
-        $statement = $this->pdo->prepare("SELECT * FROM users WHERE id = $userId");
+        $statement = $this->pdo->prepare("SELECT * FROM users WHERE id = $user_id");
         $statement->execute();
 
         return $statement->fetch();
     }
 
-    public function updateUser(string $userId, string $sql)
+    public function updateUser(string $user_id, string $sql)
     {
-        $statement = $this->pdo->prepare("SELECT * FROM users WHERE id = $userId");
+        $statement = $this->pdo->prepare("SELECT * FROM users WHERE id = $user_id");
     }
 }

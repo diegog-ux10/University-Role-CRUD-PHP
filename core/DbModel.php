@@ -173,9 +173,9 @@ abstract class DbModel extends Model
         return $statement->execute();
     }
 
-    public function assignTeacher($teacherId, $classId) {
+    public function assignTeacher($teacher_id, $class_id) {
         $tableName = $this->tableName();
-        $statement = self::prepare("UPDATE $tableName SET id_teacher = $teacherId WHERE id = $classId");
+        $statement = self::prepare("UPDATE $tableName SET id_teacher = $teacher_id WHERE id = $class_id");
         return $statement->execute();
     }
 

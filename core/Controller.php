@@ -22,9 +22,9 @@ class Controller
         if (!$user) {
             $response->redirect("/login");
         };
-        return true;
+        return $user;
     }
-
+    
     public function getLoggedUserId()
     {
         $user = Application::$app->session->get("user");

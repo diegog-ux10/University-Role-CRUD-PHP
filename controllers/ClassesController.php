@@ -13,79 +13,71 @@ class ClassesController extends Controller
     public function getClasses(Request $request, Response $response)
     {
         parent::checkAuth($response);
-        $loggedUserId = parent::getLoggedUserId();
+        $logged_user_Id = parent::getLoggedUserId();
         $model = new Classes();
         $classes = $model->all();
         $data = $this->getDataClasses($classes);
-        $enrolledClasses = $model->getEnrolledClasses($loggedUserId);
+        $enrolled_classes = $model->getEnrolledClasses($logged_user_Id);
         $this->setLayout("main");
         return $this->render("class-read", [
             'classes' => $data,
-            'enrolledClasses' => $this->getEnrolledClassDataDisplay($classes, $enrolledClasses, $loggedUserId)
+            'enrolled_classes' => $this->getEnrolledClassDataDisplay($classes, $enrolled_classes, $logged_user_Id)
         ]);
     }
 
     public function getEnrolledClass(Request $request, Response $response)
     {
-
         parent::checkAuth($response);
-        $loggedUserId = parent::getLoggedUserId();
-
+        $logged_user_Id = parent::getLoggedUserId();
         $model = new Classes();
         $classes = $model->all();
         $data = $this->getDataClasses($classes);
-        $enrolledClasses = $model->getEnrolledClasses($loggedUserId);
-
+        $enrolled_classes = $model->getEnrolledClasses($logged_user_Id);
         if ($request->isPost()) {
-            $registeredClassesId = $_POST["enrolledClasses"];
+            $registered_classes_Id = $_POST["enrolled_classes"];
 
-            if ($model->registerClasses($registeredClassesId, $loggedUserId)) {
+            if ($model->registerClasses($registered_classes_Id, $logged_user_Id)) {
                 Application::$app->session->set("message", "Clase Agregada Exitosamente!");
                 Application::$app->response->redirect("/administrar-clases");
             }
         }
-
         $this->setLayout("main");
         return $this->render("enrolled-class-edit", [
             'classes' => $data,
-            'enrolledClasses' => $this->getEnrolledClassDataDisplay($classes, $enrolledClasses, $loggedUserId),
+            'enrolled_classes' => $this->getEnrolledClassDataDisplay($classes, $enrolled_classes, $logged_user_Id),
         ]);
     }
 
     public function update(Request $request, Response $response)
     {
         parent::checkAuth($response);
-
-        $classId = $request->getBody()["id"];
+        $class_id = $request->getBody()["id"];
         $model = new Classes();
         $classes = $model->all();
         $data = $this->getDataClasses($classes);
         $teachers = $model->getAllTeachers();
-        $classForEdit = $model->findOne(["id" => $classId]);
-
+        $class_for_edit = $model->findOne(["id" => $class_id]);
         if ($request->isPost()) {
             $body = $request->getBody();
-            $teacherId = $body["id_teacher"] ? $body["id_teacher"] : null;
+            $teacher_id = $body["id_teacher"] ? $body["id_teacher"] : null;
             $model->loadData($body);
-            if ($model->validate() && $model->updateClass($classId, $teacherId)) {
+            if ($model->validate() && $model->updateClass($class_id, $teacher_id)) {
                 Application::$app->session->set("message", "Clase Editada Exitosamente!");
                 Application::$app->response->redirect("/clases");
             }
-
             $this->setLayout("main");
             return $this->render("class-edit", [
-                'model' => $classForEdit,
+                'model' => $class_for_edit,
                 'classes' => $data
             ]);
         }
-
         if ($request->isGet()) {
             $this->setLayout("main");
             return $this->render("class-edit", [
-                'model' => $classForEdit,
+                'model' => $class_for_edit,
                 'classes' => $data,
                 'teachers' => $teachers,
-                'id' => $classId
+                'id' => $class_id
             ]);
         }
     }
@@ -93,10 +85,9 @@ class ClassesController extends Controller
     public function delete(Request $request, Response $response)
     {
         parent::checkAuth($response);
-
-        $classId = $request->getBody()["id"];
+        $class_id = $request->getBody()["id"];
         $model = new Classes();
-        if ($model->delete($classId)) {
+        if ($model->delete($class_id)) {
             Application::$app->session->set("message", "Clase Eliminada Exitosamente!");
             Application::$app->response->redirect("/clases");
         };
@@ -106,57 +97,55 @@ class ClassesController extends Controller
     {
         $data = [];
         foreach ($classes as $class) {
-
             if ($class["id_teacher"]) {
-                $teacherName = Classes::getTeacherName($class["id_teacher"]);
+                $teacher_name = Classes::getTeacherName($class["id_teacher"]);
             } else {
-                $teacherName = "Sin asignar";
+                $teacher_name = "Sin asignar";
             }
             $enrolled_students = Classes::getCount($class["id"], 'id_class', 'enrolled_classes');
             if ($enrolled_students === 0) {
                 $enrolled_students = "Sin Alumnos";
             }
-            $data[] = ["id" => $class["id"], "name" => $class["name"], "teacher" => $teacherName, "enrolled_students" => $enrolled_students];
+            $data[] = ["id" => $class["id"], "name" => $class["name"], "teacher" => $teacher_name, "enrolled_students" => $enrolled_students];
         }
-
         return $data;
     }
 
-    public function getEnrolledClassDataDisplay($classes, $enrolledClasses, $userId)
+    public function getEnrolledClassDataDisplay($classes, $enrolled_classes, $user_id)
     {
-        $enrolledClassesForStudent = [];
-        $NotEnrolledClassesForStudent = [];
-        if ($enrolledClasses) {
-            foreach ($enrolledClasses as $enrolledclass) {
-                if ($enrolledclass["id_student"] === $userId) {
+        $enrolled_classes_for_student = [];
+        $not_enrolled_classes_for_student = [];
+        if ($enrolled_classes) {
+            foreach ($enrolled_classes as $enrolledclass) {
+                if ($enrolledclass["id_student"] === $user_id) {
                     foreach ($classes as $class) {
                         if ($class['id'] === $enrolledclass["id_class"]) {
-                            $enrolledClassesForStudent[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
+                            $enrolled_classes_for_student[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
                         } else {
-                            $NotEnrolledClassesForStudent[] = $class;
+                            $not_enrolled_classes_for_student[] = $class;
                         }
                     }
                 }
             }
         } else {
-            $NotEnrolledClassesForStudent = $classes;
+            $not_enrolled_classes_for_student = $classes;
         }
         return [
-            "enrolled_classes" => $enrolledClassesForStudent,
-            "not_enrolled_classes" =>  $NotEnrolledClassesForStudent
+            "enrolled_classes" => $enrolled_classes_for_student,
+            "not_enrolled_classes" =>  $not_enrolled_classes_for_student
         ];
     }
 
     public function deleteEnrolledClass(Request $request, Response $response)
     {
         parent::checkAuth($response);
-        $loggedUserId = parent::getLoggedUserId();
-        $classId = $request->getBody()["id"];
+        $logged_user_Id = parent::getLoggedUserId();
+        $class_id = $request->getBody()["id"];
         $model = new Classes();
         if ($request->isPost()) {
             $body = $request->getBody();
             $model->loadData($body);
-            if ($model->deleteEnrolledClass($classId, $loggedUserId)) {
+            if ($model->deleteEnrolledClass($class_id, $logged_user_Id)) {
                 Application::$app->session->set("message", "Clase Eliminada Exitosamente!");
                 Application::$app->response->redirect("/administrar-clases");
             }

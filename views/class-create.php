@@ -1,11 +1,19 @@
 <?php
 
+use core\Application;
+
 $this->title = "Crear Clase";
 
 /**@var $model \models\Student */
 
 foreach ($model as $key => $value) {
     $$key = $value;
+}
+
+$user = Application::$app->session->get("user");
+
+if ($user["rol"] !== "ADMIN") {
+    Application::$app->response->redirect("/unauthorized");
 }
 
 ?>

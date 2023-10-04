@@ -26,29 +26,29 @@ class Teacher extends User
         return parent::all();
     }
 
-    
-    public function saveTeacher($classId)
+
+    public function saveTeacher($class_id)
     {
         $this->password = password_hash($this->password, PASSWORD_DEFAULT);
         $createdUser = parent::save();
-        if($classId) {
-           $class = Classes::get($classId, "classes");
-           $class->assignTeacher($createdUser->{'id'}, $class->{'id'});
-           return true;    
+        if ($class_id) {
+            $class = Classes::get($class_id, "classes");
+            $class->assignTeacher($createdUser->{'id'}, $class->{'id'});
+            return true;
         }
         return true;
     }
 
-    public function updateTeacher($teacherId, $classId)
+    public function updateTeacher($teacher_id, $class_id)
     {
         $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-        parent::update($teacherId);
+        parent::update($teacher_id);
         $class = new Classes();
-        if($classId) {
-            $class = Classes::get($classId, "classes");
-            $class->assignTeacher($teacherId, $class->{'id'});  
+        if ($class_id) {
+            $class = Classes::get($class_id, "classes");
+            $class->assignTeacher($teacher_id, $class->{'id'});
         } else {
-            $AssignedClassToTeacher = $class->isTeacherAssign($teacherId);
+            $AssignedClassToTeacher = $class->isTeacherAssign($teacher_id);
             if ($AssignedClassToTeacher) {
                 $class->assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
             }
@@ -59,22 +59,41 @@ class Teacher extends User
 
     public static function getAsignedClass($id)
     {
-        return parent::findInOtherTableByColumn("classes", "id_teacher" , $id);
+        return parent::findInOtherTableByColumn("classes", "id_teacher", $id);
     }
     public function delete($id)
     {
         return parent::delete($id);
     }
 
-    public function getAllClasses() 
+    public function getAllClasses()
     {
         return parent::allOtherTable("classes");
     }
 
-    public function saveAsignedClass($classID, $teacherID, $tableName) 
+    public function saveAsignedClass($classID, $teacherID, $tableName)
     {
         $statement = self::prepare("UPDATE $tableName SET id_teacher = $teacherID  WHERE id = $classID");
         $statement->execute();
         return true;
+    }
+
+    public function getDataTeachers($users)
+    {
+        $data = [];
+        foreach ($users as $user) {
+            if ($user["id_role"] !== 2) {
+                continue;
+            }
+            $teacher_name = $user["firstname"] . " " . $user["lastname"];
+            $assigned_class = self::getAsignedClass($user["id"]);
+            if ($assigned_class) {
+                $assignedClassName = $assigned_class->name;
+            } else {
+                $assignedClassName = "Sin Asignar";
+            }
+            $data[] = ["id" => $user["id"], "name" => $teacher_name, "email" => $user["email"], "address" => $user["address"], "bday" => $user["bday"], "assigned_class" => $assignedClassName];
+        }
+        return $data;
     }
 }

@@ -44,9 +44,9 @@ class Classes extends DbModel
         return parent::all();
     }
 
-    public function isTeacherAssign($teacherId)
+    public function isTeacherAssign($teacher_id)
     {
-        $AssignedClassToTeacher = parent::findOne(["id_teacher" => $teacherId]);
+        $AssignedClassToTeacher = parent::findOne(["id_teacher" => $teacher_id]);
         if ($AssignedClassToTeacher) {
             return $AssignedClassToTeacher;
         } else {
@@ -54,12 +54,12 @@ class Classes extends DbModel
         }
     }
 
-    public function saveClass($teacherId)
+    public function saveClass($teacher_id)
     {
         $createdClass = parent::save();
-        if ($teacherId) {
-            $user = User::get($teacherId, "users");
-            $AssignedClassToTeacher = $this->isTeacherAssign($teacherId);
+        if ($teacher_id) {
+            $user = User::get($teacher_id, "users");
+            $AssignedClassToTeacher = $this->isTeacherAssign($teacher_id);
             if ($AssignedClassToTeacher) {
                 parent::assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
             }
@@ -69,15 +69,15 @@ class Classes extends DbModel
         return true;
     }
 
-    public function updateClass($id, $teacherId)
+    public function updateClass($id, $teacher_id)
     {
         parent::update($id);
-        $AssignedClassToTeacher = $this->isTeacherAssign($teacherId);
+        $AssignedClassToTeacher = $this->isTeacherAssign($teacher_id);
         if ($AssignedClassToTeacher) {
             parent::assignTeacher('NULL', $AssignedClassToTeacher->{'id'});
         }
-        if ($teacherId) {
-            parent::assignTeacher($teacherId, $id);
+        if ($teacher_id) {
+            parent::assignTeacher($teacher_id, $id);
             return true;
         } else {
             parent::assignTeacher('NULL', $id);
@@ -85,9 +85,9 @@ class Classes extends DbModel
         return true;
     }
 
-    public static function getTeacherName($teacherId)
+    public static function getTeacherName($teacher_id)
     {
-        $teacher = parent::findInOtherTableByColumn('users', 'id', $teacherId);
+        $teacher = parent::findInOtherTableByColumn('users', 'id', $teacher_id);
         if ($teacher) {
             return  $teacher->firstname . " " .  $teacher->lastname;
         }
@@ -120,34 +120,34 @@ class Classes extends DbModel
 
     public function getEnrolledClasses($id)
     {
-        $enrolledClasses = parent::findAllinOtherTable("enrolled_classes", ["id_student" => $id]);
-        return $enrolledClasses;
+        $enrolled_classes = parent::findAllinOtherTable("enrolled_classes", ["id_student" => $id]);
+        return $enrolled_classes;
     }
 
-    public function assignTeacher($teacherId, $classId)
+    public function assignTeacher($teacher_id, $class_id)
     {
-        parent::assignTeacher($teacherId, $classId);
+        parent::assignTeacher($teacher_id, $class_id);
     }
 
-    public function deleteEnrolledClass($classId, $studentId)
+    public function deleteEnrolledClass($class_id, $student_id)
     {
-        $statement = Application::$app->db->pdo->prepare("DELETE FROM enrolled_classes WHERE id_student = $studentId AND id_class = $classId");
+        $statement = Application::$app->db->pdo->prepare("DELETE FROM enrolled_classes WHERE id_student = $student_id AND id_class = $class_id");
         return $statement->execute();
     }
 
-    public function registerClasses($classesId, $studentId)
+    public function registerClasses($classesId, $student_id)
     {
-        foreach ($classesId as $classId) {
-            $classId = intval($classId);
-            $statement = Application::$app->db->pdo->prepare("INSERT INTO enrolled_classes (id_class, id_student) VALUES ($classId, $studentId)");
+        foreach ($classesId as $class_id) {
+            $class_id = intval($class_id);
+            $statement = Application::$app->db->pdo->prepare("INSERT INTO enrolled_classes (id_class, id_student) VALUES ($class_id, $student_id)");
             $statement->execute();
         }
         return true;
     }
 
-    public static function getNotRegisteredClass($userId)
+    public static function getNotRegisteredClass($user_id)
     {
-        $statement = Application::$app->db->pdo->prepare("SELECT * FROM classes WHERE id_student != $userId");
+        $statement = Application::$app->db->pdo->prepare("SELECT * FROM classes WHERE id_student != $user_id");
         $statement->execute();
         return $statement->fetchAll();
     }

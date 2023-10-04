@@ -12,7 +12,9 @@ foreach ($model as $key => $value) {
     $$key = $value;
 }
 
-
+if ($user["rol"] !== "ADMIN") {
+    $user = Application::$app->response->redirect("/unauthorized");
+}
 
 ?>
 
@@ -98,10 +100,6 @@ foreach ($model as $key => $value) {
             </form>
         </div>
     </div>
-
-<?php endif; ?>
-
-<?php if ($user["rol"] === "STUDENT") : ?>
 
 <?php endif; ?>
 

@@ -5,6 +5,10 @@ use core\Application;
 
 $user = Application::$app->session->get("user");
 
+if ($user["rol"] !== "ADMIN" && $user["rol"] !== "TEACHER") {
+    Application::$app->response->redirect("/unauthorized");
+}
+
 ?>
 
 <!-- START: VISTA PARA ADMIN -->
@@ -92,7 +96,7 @@ $user = Application::$app->session->get("user");
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($assignedStudents as $student) : ?>
+                    <?php foreach ($assigned_students as $student) : ?>
                         <tr>
                             <td><?php echo $student->id ?></td>
                             <td><?php echo $student->firstname . " " .  $student->lastname ?></td>
