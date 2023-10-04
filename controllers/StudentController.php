@@ -22,7 +22,7 @@ class StudentController extends Controller
         return $this->render("student-read", [
             'students' => $data,
             'model' => $model,
-            'assignedStudents' => $assigned_students
+            'assigned_students' => $assigned_students
         ]);
     }
 
