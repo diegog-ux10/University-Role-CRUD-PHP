@@ -19,6 +19,8 @@ $app->router->get("/index.php", [SiteController::class, "getDashboard"]);
 $app->router->get("/unauthorized", [SiteController::class, "unauthorized"]);
 
 $app->router->get("/permisos", [UserController::class, "manageUsers"]);
+$app->router->get("/editar-usuario", [UserController::class, "update"]);
+$app->router->post("/editar-usuario", [UserController::class, "update"]);
 $app->router->get("/permisos/editar-permisos", [UserController::class, "updateRoles"]);
 $app->router->post("/permisos/editar-permisos", [UserController::class, "updateRoles"]);
 
