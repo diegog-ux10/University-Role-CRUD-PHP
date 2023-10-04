@@ -4,6 +4,7 @@ namespace controllers;
 
 use core\Application;
 use core\Controller;
+use core\DbModel;
 use core\Request;
 use core\Response;
 use models\Teacher;
@@ -49,7 +50,6 @@ class UserController extends Controller
                 'users' => $users,
             ]);
         }
-
         if ($request->isGet()) {
             $this->setLayout("main");
             return $this->render("user-admin", [
@@ -58,6 +58,34 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function update(Request $request, Response $response)
+    {
+        $user = parent::checkAuth($response);
+        $user_id = $user['id'];
+        $user_model = new User();
+        $user_for_edit =  $user_model->findUser($user_id);
+        if ($request->isPost()) {
+            $body = $request->getBody();
+            $user_model->loadData($body);
+            if ($user_model->validateUpdate() && $user_model->updateUser($user_id)) {
+                Application::$app->session->set("message", "Usuario Actualizado Exitosamente!");
+                Application::$app->response->redirect("/editar-usuario");
+            }
+            $this->setLayout("main");
+            return $this->render("user-edit", [
+                "model" => $user_for_edit,
+            ]);
+        }   
+        if ($request->isGet()) {
+            $this->setLayout("main");
+            return $this->render("user-edit", [
+                "model" => $user_for_edit,
+            ]);
+        }
+    }
+
+
 
     public function delete(Request $request, Response $response)
     {
@@ -74,7 +102,7 @@ class UserController extends Controller
     {
         $data = [];
         foreach ($users as $user) {
-            if($user["id_role"] !== 2) {
+            if ($user["id_role"] !== 2) {
                 continue;
             }
             $teacher_name = $user["firstname"] . " " . $user["lastname"];

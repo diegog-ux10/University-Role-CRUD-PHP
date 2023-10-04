@@ -151,4 +151,22 @@ class Classes extends DbModel
         $statement->execute();
         return $statement->fetchAll();
     }
+    
+    public function getDataClasses($classes)
+    {
+        $data = [];
+        foreach ($classes as $class) {
+            if ($class["id_teacher"]) {
+                $teacher_name = self::getTeacherName($class["id_teacher"]);
+            } else {
+                $teacher_name = "Sin asignar";
+            }
+            $enrolled_students = self::getCount($class["id"], 'id_class', 'enrolled_classes');
+            if ($enrolled_students === 0) {
+                $enrolled_students = "Sin Alumnos";
+            }
+            $data[] = ["id" => $class["id"], "name" => $class["name"], "teacher" => $teacher_name, "enrolled_students" => $enrolled_students];
+        }
+        return $data;
+    }
 }

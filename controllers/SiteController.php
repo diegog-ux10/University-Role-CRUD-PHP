@@ -11,6 +11,7 @@ class SiteController extends Controller
     public function getDashboard(Request $request, Response $response)
     {
         $user = parent::checkAuth($response);
+        
         $this->setLayout("main");
         return $this->render("dashboard", [
             'user' => $user

@@ -16,7 +16,7 @@ class ClassesController extends Controller
         $logged_user_Id = parent::getLoggedUserId();
         $model = new Classes();
         $classes = $model->all();
-        $data = $this->getDataClasses($classes);
+        $data = $model->getDataClasses($classes);
         $enrolled_classes = $model->getEnrolledClasses($logged_user_Id);
         $this->setLayout("main");
         return $this->render("class-read", [
@@ -31,7 +31,7 @@ class ClassesController extends Controller
         $logged_user_Id = parent::getLoggedUserId();
         $model = new Classes();
         $classes = $model->all();
-        $data = $this->getDataClasses($classes);
+        $data = $model->getDataClasses($classes);
         $enrolled_classes = $model->getEnrolledClasses($logged_user_Id);
         if ($request->isPost()) {
             $registered_classes_Id = $_POST["enrolled_classes"];
@@ -54,7 +54,7 @@ class ClassesController extends Controller
         $class_id = $request->getBody()["id"];
         $model = new Classes();
         $classes = $model->all();
-        $data = $this->getDataClasses($classes);
+        $data = $model->getDataClasses($classes);
         $teachers = $model->getAllTeachers();
         $class_for_edit = $model->findOne(["id" => $class_id]);
         if ($request->isPost()) {
@@ -93,34 +93,16 @@ class ClassesController extends Controller
         };
     }
 
-    public function getDataClasses($classes)
-    {
-        $data = [];
-        foreach ($classes as $class) {
-            if ($class["id_teacher"]) {
-                $teacher_name = Classes::getTeacherName($class["id_teacher"]);
-            } else {
-                $teacher_name = "Sin asignar";
-            }
-            $enrolled_students = Classes::getCount($class["id"], 'id_class', 'enrolled_classes');
-            if ($enrolled_students === 0) {
-                $enrolled_students = "Sin Alumnos";
-            }
-            $data[] = ["id" => $class["id"], "name" => $class["name"], "teacher" => $teacher_name, "enrolled_students" => $enrolled_students];
-        }
-        return $data;
-    }
-
     public function getEnrolledClassDataDisplay($classes, $enrolled_classes, $user_id)
     {
         $enrolled_classes_for_student = [];
         $not_enrolled_classes_for_student = [];
         if ($enrolled_classes) {
-            foreach ($enrolled_classes as $enrolledclass) {
-                if ($enrolledclass["id_student"] === $user_id) {
+            foreach ($enrolled_classes as $enrolled_class) {
+                if ($enrolled_class["id_student"] === $user_id) {
                     foreach ($classes as $class) {
-                        if ($class['id'] === $enrolledclass["id_class"]) {
-                            $enrolled_classes_for_student[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolledclass['grade'] ?? "Sin Calificacion"];
+                        if ($class['id'] === $enrolled_class["id_class"]) {
+                            $enrolled_classes_for_student[] = ['id' => $class['id'], 'name' => $class['name'], 'grade' => $enrolled_class['grade'] ?? "Sin Calificacion"];
                         } else {
                             $not_enrolled_classes_for_student[] = $class;
                         }

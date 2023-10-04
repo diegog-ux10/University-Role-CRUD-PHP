@@ -42,14 +42,14 @@ class User extends UserModel
         return parent::save();
     }
 
-    public function updateUser($id, $role)
+    public function updateUser($id, $role = null)
     {
         $password = $this->password;
         if ($password) {
             $this->password = password_hash($this->password, PASSWORD_DEFAULT);
         }
-        $role =  intval($role);
         $user = parent::get($id, 'users');
+        if ($role) $role =  intval($role);
         if ($role !== $user->{"id_role"}) {
             if ($user->{"id_role"} === 2) {
                 $classModel = new Classes();
@@ -72,7 +72,7 @@ class User extends UserModel
     {
         return [
             "email" => [self::RULE_REQUIRED, self::RULE_EMAIL, [self::RULE_UNIQUE, "class" => self::class]],
-            // "password" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 6], [self::RULE_MAX, "max" => 24]],
+            "password" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 6], [self::RULE_MAX, "max" => 24]],
             "firstname" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 3], [self::RULE_MAX, "max" => 100]],
             "lastname" => [self::RULE_REQUIRED, [self::RULE_MIN, "min" => 3], [self::RULE_MAX, "max" => 100]],
             "address" => [self::RULE_REQUIRED],
@@ -97,5 +97,9 @@ class User extends UserModel
     public function getDisplayName(): string
     {
         return $this->name;
+    }
+
+    public function findUser($id) {
+        return parent::findOne(['id' => $id]);
     }
 }

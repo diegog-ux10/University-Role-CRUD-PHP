@@ -36,11 +36,15 @@ class Login extends User
             $this->addError("email", "User does not exists with this email address");
             return false;
         }
-        // !password_verify($this->password, $user->password)
-        if ($this->password !== $user->password) {
+        $password = $user->password;
+        $statement = Application::$app->db->prepare("SELECT * FROM users WHERE `password` = PASSWORD('$password')");
+        $isPassword = $statement->execute();
+
+        if (!password_verify($this->password, $user->password) && !$isPassword) {
             $this->addError("password", "Password is incorrect");
             return false;
         }
+
         return Application::$app->login($user);
     }
 }

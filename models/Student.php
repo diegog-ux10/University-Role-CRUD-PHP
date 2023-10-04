@@ -8,6 +8,7 @@ use core\UserModel;
 class Student extends User
 {
     public int $id_role = 3;
+    public string $password = 'student';
 
     public function rules(): array
     {
@@ -23,7 +24,7 @@ class Student extends User
 
     public function attributes(): array
     {
-        return ["email", "firstname", "lastname", "address", "dni", "bday", "id_role"];
+        return ["email", "firstname", "lastname", "address", "dni", "bday", "id_role", "password"];
     }
 
     public static function getEnrolledClassesByStudentId($student_id)

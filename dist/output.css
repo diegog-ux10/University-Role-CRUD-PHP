@@ -690,6 +690,11 @@ video {
   margin-right: 1.25rem;
 }
 
+.my-4{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .mb-1{
   margin-bottom: 0.25rem;
 }
@@ -1423,6 +1428,10 @@ video {
 
 .justify-items-stretch{
   justify-items: stretch;
+}
+
+.gap-2{
+  gap: 0.5rem;
 }
 
 .gap-4{

@@ -148,8 +148,16 @@ $path = $_SERVER["PATH_INFO"] ?? "/";
                         </span>
                     </button>
                     <ul id="dropdown-menu" class="absolute hidden py-2 px-4 rounded-md bg-white border border-gray-100 mt-2">
+                    <li class="flex px-2 gap-2 w-full">
+                            <a href="/editar-usuario" class="flex items-center justify-between gap-2 text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                                <span class="material-symbols-outlined">
+                                    person
+                                </span>
+                                <span>Perfil</span>
+                            </a>
+                        </li>
                         <li class="flex px-2">
-                            <a href="/logout" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
+                            <a href="/logout" class="flex items-center gap-2 text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">
                                 <span class="material-symbols-outlined text-red-700">
                                     logout
                                 </span>
